@@ -7,7 +7,7 @@ A Python implementation of a private winget repository server (/REST API).
 `winget` only allows `https://` sources. This means that if we want to run
 locally, then we need a self-signed SSL certificate for `localhost`.
 
-[`conf/localhost.pfx`](localhost.pfx) can be used for this purpose. It was
+[`localhost.pfx`](conf/localhost.pfx) can be used for this purpose. It was
 created from [these instructions](https://gist.github.com/alicoskun/57acda07d5ab672a3c820da57b9531e3).
 To install it, issue the following in a Powershell Admin prompt:
 
