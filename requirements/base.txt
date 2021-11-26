@@ -1,3 +1,4 @@
 # Update base-full.txt after any changes!
 
 django==3.2.9
+gunicorn==20.1.0
