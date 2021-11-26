@@ -23,20 +23,16 @@ To remove it later, run `mmc`, click `File/Add or Remove Snap-in` then
 `Current User/Personal`, `Current User/Trusted Root Certification Authorities`,
 and `Local Computer/Personal`.
 
-### Set up the virtual environment
+### Set up the development environment
 
-In `wsl`:
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -Ur requirements/base-full.txt
-```
+    pip install -Ur requirements/base-full.txt
 
 ### Run locally
 
-In `wsl`:
+    python manage.py runserver
 
-    gunicorn --certfile=conf/localhost.cert --keyfile=conf/localhost.key --bind 0.0.0.0:8000 wpr.wsg:application
+Then:
 
-Then you can open `https://localhost:8000` in the browser.
+    python sslproxy.py
+
+Then you can open `https://localhost:8443` in the browser.
