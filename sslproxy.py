@@ -34,14 +34,18 @@ def forward(source, destination, prefix=''):
         except ConnectionResetError:
             break
         if data:
-            decoded = data.decode('utf-8')
-            for line in decoded.split('\n'):
-                print(prefix + line)
-            decoded = decoded.replace(
-                f'\nHost: localhost:{local_port}',
-                f'\nHost:{dest_host}'
-            )
-            destination.sendall(decoded.encode('utf-8'))
+            try:
+                decoded = data.decode('utf-8')
+            except UnicodeDecodeError:
+                destination.sendall(data)
+            else:
+                for line in decoded.split('\n'):
+                    print(prefix + line)
+                decoded = decoded.replace(
+                    f'\nHost: localhost:{local_port}',
+                    f'\nHost:{dest_host}'
+                )
+                destination.sendall(decoded.encode('utf-8'))
         else:
             source.shutdown(socket.SHUT_RD)
             destination.shutdown(socket.SHUT_WR)
