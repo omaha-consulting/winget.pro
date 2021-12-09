@@ -1,3 +1,3 @@
 # Update base-full.txt after any changes!
 
-django==3.2.9
+django==4.0
