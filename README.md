@@ -36,3 +36,7 @@ Then:
     python sslproxy.py
 
 Then you can open `https://localhost:8443` in the browser.
+
+To add the REST source:
+
+    winget source add -n "winget-pkgs-restsource" -a https://localhost:8443/api/ -t "Microsoft.Rest"
