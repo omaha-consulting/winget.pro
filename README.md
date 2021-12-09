@@ -35,8 +35,25 @@ Then:
 
     python sslproxy.py
 
-Then you can open `https://localhost:8443` in the browser.
+Then you can add the REST source (note the `httpS`):
 
-To add the REST source:
+    winget source add -n wpr -a https://localhost:8443/api/ -t "Microsoft.Rest"
 
-    winget source add -n "winget-pkgs-restsource" -a https://localhost:8443/api/ -t "Microsoft.Rest"
+### Sniff Microsoft's implementation
+
+Look at the `msstore` source shown by `winget source list`. Typically, it is:
+
+    https://storeedgefd.dsx.mp.microsoft.com/v9.0
+
+Start `sslproxy` as a man-in-the-middle proxy for the above domain:
+
+    python sslproxy.py 8444 storeedgefd.dsx.mp.microsoft.com 443 
+
+Then you can add the proxied source via:
+
+    winget source add -n ms -a https://localhost:8444/v9.0 -t "Microsoft.Rest"
+
+(Note that we used the path `/v9.0` from above.)
+
+Now you can inspect the traffic in the output of `sslproxy` when you perform
+`winget` commands.
