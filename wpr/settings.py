@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'api'
+    'winget'
 ]
 
 MIDDLEWARE = [
@@ -133,7 +133,7 @@ SUIT_CONFIG = {
     'ADMIN_NAME': 'winget Admin',
     'MENU': (
         'sites',
-        {'app': 'api', 'icon': 'icon-refresh'},
+        {'app': 'winget', 'icon': 'icon-refresh'},
     ),
     'CONFIRM_UNSAVED_CHANGES': False
 }

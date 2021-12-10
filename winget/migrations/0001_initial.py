@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 ('version', models.CharField(blank=True, help_text="The package's version (eg. 1.2.3.4).", max_length=128)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
-                ('package', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.package')),
+                ('package', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='winget.package')),
             ],
             options={
                 'unique_together': {('package', 'version')},
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('sha256', models.CharField(max_length=64, validators=[django.core.validators.RegexValidator('^[a-fA-F0-9]{64}$')])),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('modified', models.DateTimeField(auto_now=True)),
-                ('version', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.version')),
+                ('version', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='winget.version')),
             ],
             options={
                 'unique_together': {('version', 'architecture', 'type')},

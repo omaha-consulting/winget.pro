@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from api.models import Package, Version, Installer
+from winget.models import Package, Version, Installer
 
 
 class APITest(TestCase):
@@ -146,12 +146,12 @@ class APITest(TestCase):
         self.assertEqual(installer.sha256, installer_json['InstallerSha256'])
 
     def _get(self, url_name, expect_status=200, **kwargs):
-        response = self.client.get(reverse(f'api:{url_name}', kwargs=kwargs))
+        response = self.client.get(reverse(f'winget:{url_name}', kwargs=kwargs))
         self.assertEqual(expect_status, response.status_code)
         return response.json()
 
     def _post(self, url_name, data, expect_status=200):
-        path = reverse(f'api:{url_name}')
+        path = reverse(f'winget:{url_name}')
         response = self.client.post(path, data, content_type='application/json')
         self.assertEqual(expect_status, response.status_code)
         return response.json()

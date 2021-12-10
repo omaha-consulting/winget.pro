@@ -1,8 +1,8 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from api.models import Package
-from api.util import json_get, json_post
+from .models import Package
+from .util import json_get, json_post
 
 
 @json_get

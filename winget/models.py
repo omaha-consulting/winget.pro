@@ -2,7 +2,7 @@ from django.core.validators import MinLengthValidator, RegexValidator
 from django.db.models import Model, CharField, DateTimeField, ForeignKey, \
     URLField, CASCADE, TextField
 
-from api.util import CharFieldFromChoices
+from winget.util import CharFieldFromChoices
 
 
 class Package(Model):
