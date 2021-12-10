@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{# Left footer #}
+{% block footer_links %}{% endblock %}
+
+{# Center footer #}
+{% block footer_branding %}
+    &copy; {% now "Y" %}
+    <a href="https://omaha-consulting.com">Omaha Consulting</a>
+{% endblock %}
+
+
+{# Right footer #}
+{% block copyright %} {% endblock %}
