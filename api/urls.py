@@ -5,5 +5,10 @@ from . import views
 app_name = 'api'
 
 urlpatterns = [
-    path(view, getattr(views, view), name=view) for view in views.__all__
+    path('information', views.information, name='information'),
+    path('manifestSearch', views.manifestSearch, name='manifestSearch'),
+    path(
+        'packageManifests/<str:identifier>', views.packageManifests,
+        name='packageManifests'
+    )
 ]

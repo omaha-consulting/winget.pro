@@ -9,6 +9,7 @@ class Package(Model):
     identifier = CharField(unique=True, max_length=128)
     name = CharField(max_length=256, validators=[MinLengthValidator(2)])
     publisher = CharField(max_length=256, validators=[MinLengthValidator(2)])
+    description = CharField(max_length=256, validators=[MinLengthValidator(3)])
     created = DateTimeField(auto_now_add=True)
     modified = DateTimeField(auto_now=True)
 
