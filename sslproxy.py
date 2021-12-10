@@ -31,24 +31,24 @@ def forward(source, destination, prefix=''):
     while data:
         try:
             data = source.recv(1024)
+            if data:
+                try:
+                    decoded = data.decode('utf-8')
+                except UnicodeDecodeError:
+                    destination.sendall(data)
+                else:
+                    for line in decoded.split('\n'):
+                        print(prefix + line)
+                    decoded = decoded.replace(
+                        f'\nHost: localhost:{local_port}',
+                        f'\nHost:{dest_host}'
+                    )
+                    destination.sendall(decoded.encode('utf-8'))
+            else:
+                source.shutdown(socket.SHUT_RD)
+                destination.shutdown(socket.SHUT_WR)
         except ConnectionResetError:
             break
-        if data:
-            try:
-                decoded = data.decode('utf-8')
-            except UnicodeDecodeError:
-                destination.sendall(data)
-            else:
-                for line in decoded.split('\n'):
-                    print(prefix + line)
-                decoded = decoded.replace(
-                    f'\nHost: localhost:{local_port}',
-                    f'\nHost:{dest_host}'
-                )
-                destination.sendall(decoded.encode('utf-8'))
-        else:
-            source.shutdown(socket.SHUT_RD)
-            destination.shutdown(socket.SHUT_WR)
 
 local_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
 local_context.load_cert_chain(
