@@ -9,11 +9,11 @@ __all__ = ['information', 'manifestSearch']
 @require_GET
 def information(request):
     return JsonResponse({
-      'Data': {
-        'SourceIdentifier':
-            'github.com/omaha-consulting/winget-private-repository',
-        'ServerSupportedVersions': ['1.1.0']
-      }
+        'Data': {
+            'SourceIdentifier':
+                'github.com/omaha-consulting/winget-private-repository',
+            'ServerSupportedVersions': ['1.1.0']
+        }
     })
 
 @csrf_exempt
