@@ -27,7 +27,7 @@ class APITest(TestCase):
         # Simulate `winget search "visual studio code"`.
         request = {
             'Query': {
-                'KeyFord': 'visual studio code',
+                'KeyWord': 'visual studio code',
                 'MatchType': 'Substring'
             }
         }
