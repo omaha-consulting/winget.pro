@@ -1,6 +1,8 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 
+from api.models import Package, Version
+
 
 class APITest(TestCase):
 
@@ -17,8 +19,36 @@ class APITest(TestCase):
         self.assertEqual(['1.1.0'], data['ServerSupportedVersions'])
 
     def test_search_all_empty(self):
+        # Simulate `winget search` without any extra parameters.
         data = self._post('manifestSearch', {'FetchAllManifests': True})['Data']
         self.assertEqual([], data)
+
+    def test_search_simple(self):
+        # Simulate `winget search "visual studio code"`.
+        request = {
+            'Query': {
+                'KeyFord': 'visual studio code',
+                'MatchType': 'Substring'
+            }
+        }
+        data = self._post('manifestSearch', request)['Data']
+        self.assertEqual([], data)
+
+        package = Package.objects.create(
+            identifier='XP9KHM4BK9FZ7Q',
+            name="Visual Studio Code",
+            publisher="Microsoft Corporation"
+        )
+        version = Version.objects.create(version='Unknown', package=package)
+        data = self._post('manifestSearch', request)['Data']
+        self.assertEqual(1, len(data))
+        result, = data
+        self.assertEqual(package.identifier, result['PackageIdentifier'])
+        self.assertEqual(package.name, result['PackageName'])
+        self.assertEqual(package.publisher, result['Publisher'])
+        self.assertEqual(
+            [{'PackageVersion': version.version}], result['Versions']
+        )
 
     def _get(self, url_name, expect_status=200):
         response = self.client.get(reverse(f'api:{url_name}'))
