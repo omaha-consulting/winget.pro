@@ -1,12 +1,15 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.views.decorators.http import require_GET, require_POST
 
 from .models import Package
-from .util import json_get, json_post
+from .util import load_tenant, return_jsonresponse, parse_jsonrequest
 
 
-@json_get
-def information():
+@require_GET
+@load_tenant
+@return_jsonresponse
+def information(*_):
     return {
         'SourceIdentifier':
             'github.com/omaha-consulting/winget-private-repository',
@@ -14,9 +17,12 @@ def information():
     }
 
 
-@json_post
-def manifestSearch(data):
-    db_query = Q()
+@require_POST
+@load_tenant
+@parse_jsonrequest
+@return_jsonresponse
+def manifestSearch(data, tenant):
+    db_query = Q(tenant=tenant)
     if 'Query' in data:
         keyword = data['Query']['KeyWord']
         db_query &= Q(name__icontains=keyword)
@@ -39,10 +45,11 @@ def manifestSearch(data):
         for package in Package.objects.filter(db_query)
     ]
 
-
-@json_get
-def packageManifests(identifier):
-    package = get_object_or_404(Package, identifier=identifier)
+@require_GET
+@load_tenant
+@return_jsonresponse
+def packageManifests(_, tenant, identifier):
+    package = get_object_or_404(Package, tenant=tenant, identifier=identifier)
     return {
         'PackageIdentifier': package.identifier,
         'Versions': [

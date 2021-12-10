@@ -1,6 +1,8 @@
+from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.urls import reverse
 
+from tenants.models import Tenant
 from winget.models import Package, Version, Installer
 
 
@@ -9,6 +11,9 @@ class APITest(TestCase):
     def setUp(self):
         super().setUp()
         self.client = Client()
+        self.tenant = Tenant.objects.create(
+            user=User.objects.create_user('user@gmail.com')
+        )
 
     def test_information_required_parts(self):
         data = self._get('information')['Data']
@@ -50,7 +55,7 @@ class APITest(TestCase):
 
     def _create_vscode(self):
         package = Package.objects.create(
-            identifier='XP9KHM4BK9FZ7Q',
+            tenant=self.tenant, identifier='XP9KHM4BK9FZ7Q',
             name='Visual Studio Code',
             description='Free, lightweight, extensible code editor.',
             publisher='Microsoft Corporation'
@@ -67,7 +72,8 @@ class APITest(TestCase):
 
     def _create_powertoys(self):
         package = Package.objects.create(
-            identifier='XP89DCGQ3K6VLD', name='Microsoft PowerToys',
+            tenant=self.tenant, identifier='XP89DCGQ3K6VLD',
+            name='Microsoft PowerToys',
             description='A set of utilities for power users.',
             publisher='Microsoft Corporation'
         )
@@ -146,12 +152,17 @@ class APITest(TestCase):
         self.assertEqual(installer.sha256, installer_json['InstallerSha256'])
 
     def _get(self, url_name, expect_status=200, **kwargs):
-        response = self.client.get(reverse(f'winget:{url_name}', kwargs=kwargs))
+        response = self.client.get(self._reverse(url_name, kwargs))
         self.assertEqual(expect_status, response.status_code)
         return response.json()
 
     def _post(self, url_name, data, expect_status=200):
-        path = reverse(f'winget:{url_name}')
+        path = self._reverse(url_name)
         response = self.client.post(path, data, content_type='application/json')
         self.assertEqual(expect_status, response.status_code)
         return response.json()
+
+    def _reverse(self, url_name, kwargs=None):
+        new_kwargs = dict(kwargs or {})
+        new_kwargs['tenant_uuid'] = str(self.tenant.uuid)
+        return reverse(f'winget:{url_name}', kwargs=new_kwargs)

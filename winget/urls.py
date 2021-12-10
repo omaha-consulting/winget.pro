@@ -5,10 +5,15 @@ from . import views
 app_name = 'winget'
 
 urlpatterns = [
-    path('information', views.information, name='information'),
-    path('manifestSearch', views.manifestSearch, name='manifestSearch'),
     path(
-        'packageManifests/<str:identifier>', views.packageManifests,
-        name='packageManifests'
+        '<str:tenant_uuid>/information', views.information, name='information'
+    ),
+    path(
+        '<str:tenant_uuid>/manifestSearch', views.manifestSearch,
+        name='manifestSearch'
+    ),
+    path(
+        '<str:tenant_uuid>/packageManifests/<str:identifier>',
+        views.packageManifests, name='packageManifests'
     )
 ]

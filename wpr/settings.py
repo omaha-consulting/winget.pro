@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'tenants',
     'winget'
 ]
 
@@ -132,8 +133,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SUIT_CONFIG = {
     'ADMIN_NAME': 'winget Admin',
     'MENU': (
-        'sites',
         {'app': 'winget', 'icon': 'icon-refresh'},
+        {'label': 'Users', 'icon': 'icon-user', 'permissions': 'auth.add_user',
+         'models': ('auth.user', 'tenants.tenant')}
     ),
     'CONFIRM_UNSAVED_CHANGES': False
 }
