@@ -2,7 +2,9 @@
 
 A Python implementation of a private winget repository server (/REST API).
 
-## Setting up a local SSL certificate
+## Running locallly
+
+### Install a local SSL certificate
 
 `winget` only allows `https://` sources. This means that if we want to run
 locally, then we need a self-signed SSL certificate for `localhost`.
@@ -39,7 +41,11 @@ Then you can add the REST source (note the `httpS`):
 
     winget source add -n wpr -a https://localhost:8443/api/ -t "Microsoft.Rest"
 
-### Sniff Microsoft's implementation
+Then you can perform queries against the new source. Eg.:
+
+    winget search "search term" -s wpr
+
+## Sniffing Microsoft's implementation
 
 Look at the `msstore` source shown by `winget source list`. Typically, it is:
 
@@ -56,4 +62,6 @@ Then you can add the proxied source via:
 (Note that we used the path `/v9.0` from above.)
 
 Now you can inspect the traffic in the output of `sslproxy` when you perform
-`winget` commands.
+`winget` commands such as:
+
+    winget search "search term" -s ms
