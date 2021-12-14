@@ -1,0 +1,80 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static suit_tags %}
+{% load url from suit_compat %}
+
+{% block bodyclass %}login{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block content-left %}{% endblock %}
+
+{% block container %}
+
+    {% block content %}
+
+        {% if form.errors and not form.non_field_errors %}
+            <p class="errornote alert alert-error">
+                {% blocktrans count counter=form.errors.items|length %}
+                    Please correct the error below.
+                {% plural %}
+                    Please correct the errors below.
+                {% endblocktrans %}
+            </p>
+        {% endif %}
+
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <p class="errornote alert alert-error">
+                    {{ error }}
+                </p>
+            {% endfor %}
+        {% endif %}
+
+        <div id="content-main">
+            <h1><i class="icon-lock icon-white"></i> Sign up</h1>
+
+            <form action="{{ app_path }}" method="post">
+                {% csrf_token %}
+                <div class="form-row control-group{% if form.email.errors %} error{% endif %}">
+                    <label for="id_email" class="control-label required">
+                        {{ form.email.label }}:
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="help-block">{{ form.email.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-row control-group{% if form.password1.errors %} error{% endif %}">
+                    <label for="id_password" class="control-label required">
+                        {{ form.password1.label }}
+                    </label>
+                    {{ form.password1 }}
+                    {% if form.password1.errors %}
+                        <div class="help-block">{{ form.password1.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-row control-group{% if form.password2.errors %} error{% endif %}">
+                    <label for="id_password" class="control-label required">
+                        {{ form.password2.label }}</label>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                        <div class="help-block">{{ form.password2.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="submit-row">
+                    <input type="submit" value="Sign up" class="btn btn-info"/>
+                </div>
+            </form>
+
+            <script type="text/javascript">
+                document.getElementById('id_email').focus()
+            </script>
+        </div>
+    {% endblock %}
+{% endblock %}
