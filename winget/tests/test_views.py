@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client
 from django.urls import reverse
 
@@ -63,10 +64,9 @@ class APITest(TestCase):
         version = Version.objects.create(version='Unknown', package=package)
         installer = Installer.objects.create(
             version=version, architecture='x64', type='exe',
-            url='https://github.com/microsoft/vscode-winsta11er/releases/'
-                'download/v0.0.5/vscode-winsta11er-x64.exe',
-            sha256='9490453f2d73eb32f365c631bbad3b9d4837af27ce31ad6cb3dad56c50b'
-                   '0a5fa'
+            file=SimpleUploadedFile('vscode-winsta11er-x64.exe', b'1'),
+            sha256='6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb78'
+                   '75b4b'
         )
         return package, version, installer
 
@@ -80,10 +80,9 @@ class APITest(TestCase):
         version = Version.objects.create(version='Unknown', package=package)
         installer = Installer.objects.create(
             version=version, architecture='x64', type='exe',
-            url='https://github.com/microsoft/PowerToys/releases/'
-                'download/v0.51.1/PowerToysSetup-0.51.1-x64.exe',
-            sha256='cdd2c65a30017da05a0bf5a8b144db8e523e17225fd180ffc3bd4c8b81f'
-                   '72994'
+            file=SimpleUploadedFile('PowerToysSetup-0.51.1-x64.exe', b'2'),
+            sha256='d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec1'
+                   '3ab35'
         )
         return package, version, installer
 
@@ -148,7 +147,10 @@ class APITest(TestCase):
         installer_json, = version_json['Installers']
         self.assertEqual(installer.architecture, installer_json['Architecture'])
         self.assertEqual(installer.type, installer_json['InstallerType'])
-        self.assertEqual(installer.url, installer_json['InstallerUrl'])
+        self.assertEqual(
+            f'http://testserver{installer.file.url}',
+            installer_json['InstallerUrl']
+        )
         self.assertEqual(installer.sha256, installer_json['InstallerSha256'])
 
     def _get(self, url_name, expect_status=200, **kwargs):

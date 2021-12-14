@@ -21,7 +21,7 @@ def information(*_):
 @load_tenant
 @parse_jsonrequest
 @return_jsonresponse
-def manifestSearch(data, tenant):
+def manifestSearch(_, data, tenant):
     db_query = Q(tenant=tenant)
     if 'Query' in data:
         keyword = data['Query']['KeyWord']
@@ -48,7 +48,7 @@ def manifestSearch(data, tenant):
 @require_GET
 @load_tenant
 @return_jsonresponse
-def packageManifests(_, tenant, identifier):
+def packageManifests(request, tenant, identifier):
     package = get_object_or_404(Package, tenant=tenant, identifier=identifier)
     return {
         'PackageIdentifier': package.identifier,
@@ -65,7 +65,8 @@ def packageManifests(_, tenant, identifier):
                     {
                         'Architecture': installer.architecture,
                         'InstallerType': installer.type,
-                        'InstallerUrl': installer.url,
+                        'InstallerUrl':
+                            request.build_absolute_uri(installer.file.url),
                         'InstallerSha256': installer.sha256
                     }
                     for installer in version.installer_set.all()

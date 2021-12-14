@@ -18,7 +18,7 @@ def parse_jsonrequest(func):
     @wraps(func)
     def inner(request, *args, **kwargs):
         data = json.loads(request.body)
-        return func(data, *args, **kwargs)
+        return func(request, data, *args, **kwargs)
 
     return inner
 
