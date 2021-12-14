@@ -1,2 +1,3 @@
+listen 443 ssl;
 ssl_certificate /etc/letsencrypt/live/main/fullchain.pem;
 ssl_certificate_key /etc/letsencrypt/live/main/privkey.pem;

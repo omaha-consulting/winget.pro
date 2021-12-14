@@ -95,6 +95,21 @@ postmap /etc/postfix/generic
 chown postfix /etc/postfix/generic
 /etc/init.d/postfix reload > /dev/null
 
+log 'Creating data directory...'
+# At the moment, we only have a db.sqlite3 file in this directory. It's tempting
+# to then just place the file directly into /var/lib. However, this does not
+# work, as it leads to file write access errors when SQLite tries to write to
+# the database. The reason is probably that SQLite creates additional files in
+# the directory.
+mkdir -p /var/lib/wpr
+chown django:django /var/lib/wpr
+
+log 'Creating directories for static and media files...'
+mkdir /srv/static
+chown django:django /srv/static
+mkdir /srv/media
+chown django:django /srv/media
+
 log 'Installing OS dependencies for our Python environment...'
 apt-get install python3-venv -y > /dev/null
 
@@ -103,13 +118,13 @@ python3 -m venv /srv/venv > /dev/null
 
 log 'Installing Python dependencies...'
 # N.B.: pip should be on PATH from sourcing .bashrc at the top.
-pip install -Ur /srv/requirements/base-full.txt > /dev/null
+/srv/venv/bin/pip install -Ur /srv/requirements/base-full.txt > /dev/null
 
 log 'Migrating database...'
-su -c '/srv/manage.sh migrate | grep -v "INFO\|DEBUG"' - django
+su -c '/srv/bin/manage.sh migrate | grep -v "INFO\|DEBUG"' - django
 
 log 'Collecting static files...'
-su -c '/srv/manage.sh collectstatic --noinput | grep -v "INFO\|DEBUG"' - django
+su -c '/srv/bin/manage.sh collectstatic --noinput | grep -v "INFO\|DEBUG"' - django
 
 log 'Installing Supervisor...'
 apt-get install supervisor -y > /dev/null
@@ -129,7 +144,7 @@ mkdir /etc/nginx/includes
 
 log 'Creating Nginx config...'
 envsubst < /srv/conf/nginx/server-name > /etc/nginx/includes/server-name
-touch /etc/nginx/includes/ssl-cert
+touch /etc/nginx/includes/ssl
 
 log 'Applying Nginx config...'
 ln -s /srv/conf/nginx/nginx /etc/nginx/sites-available/wpr
@@ -143,7 +158,7 @@ log 'Generating SSL certificates...'
 apt-get install certbot python3-certbot-nginx -y > /dev/null
 certbot register --quiet --email $ADMIN_EMAIL --agree-tos
 certbot certonly --nginx --quiet --cert-name main -d $HOST_NAME
-ln -sf /srv/conf/nginx/ssl-cert /etc/nginx/includes/ssl-cert
+ln -sf /srv/conf/nginx/ssl /etc/nginx/includes/ssl
 service nginx restart
 
 log "The server is now serving requests at $HOST_NAME!"
