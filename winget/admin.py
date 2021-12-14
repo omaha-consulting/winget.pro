@@ -1,5 +1,8 @@
+from hashlib import sha256
+
 from django.contrib import admin
 from django.contrib.admin import StackedInline, ModelAdmin
+from django.forms import ModelForm
 
 from tenants.models import Tenant
 from .models import Package, Version, Installer
@@ -27,8 +30,23 @@ class PackageAdmin(ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
+class InstallerForm(ModelForm):
+    class Meta:
+        model = Installer
+        fields = '__all__'
+
+    def save(self, commit=True):
+        m = sha256()
+        for chunk in self.instance.file.chunks():
+            m.update(chunk)
+        self.instance.sha256 = m.digest().hex()
+        return super().save(commit)
+
+
 class InstallerInline(StackedInline):
     model = Installer
+    form = InstallerForm
+    readonly_fields = ('sha256',)
     extra = 0
 
     def get_queryset(self, request):

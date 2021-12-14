@@ -1,6 +1,6 @@
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.db.models import Model, CharField, DateTimeField, ForeignKey, \
-    URLField, CASCADE, TextField
+    CASCADE, TextField, FileField
 
 from tenants.models import Tenant
 from winget.util import CharFieldFromChoices
@@ -60,7 +60,7 @@ class Installer(Model):
         'msix', 'msi', 'appx', 'exe', 'zip', 'inno', 'nullsoft', 'wix', 'burn',
         'pwa', 'msstore'
     )
-    url = URLField()
+    file = FileField()
     sha256 = CharField(
         max_length=64, validators=[RegexValidator('^[a-fA-F0-9]{64}$')]
     )
@@ -71,4 +71,4 @@ class Installer(Model):
         unique_together = ('version', 'architecture', 'type')
 
     def __str__(self):
-        return self.url.rsplit('/', 1)[-1]
+        return self.file.url
