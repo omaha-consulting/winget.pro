@@ -126,11 +126,14 @@ su -c '/srv/bin/manage.sh migrate | grep -v "INFO\|DEBUG"' - django
 log 'Collecting static files...'
 su -c '/srv/bin/manage.sh collectstatic --noinput | grep -v "INFO\|DEBUG"' - django
 
+log 'Initializing run/ directory...'
+/srv/omaha/bin/init-run-dir.sh
+
 log 'Installing Supervisor...'
 apt-get install supervisor -y > /dev/null
 
 log 'Configuring Supervisor...'
-ln -s /srv/conf/supervisor/*.conf /etc/supervisor/conf.d
+ln -s /srv/conf/gunicorn.conf /etc/supervisor/conf.d
 
 log 'Starting services...'
 supervisorctl reread > /dev/null

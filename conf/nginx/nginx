@@ -3,7 +3,7 @@ upstream django {
   # to return a good HTTP response (in case the Unicorn master nukes a
   # single worker for timing out).
 
-  server unix:/var/run/gunicorn.sock fail_timeout=0;
+  server unix:/var/run/wpr/gunicorn.sock fail_timeout=0;
 }
 
 server {

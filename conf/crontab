@@ -1,2 +1,3 @@
 MAILTO=$ADMIN_EMAIL
+@reboot /srv/omaha/bin/init-run-dir.sh
 26 2 */7 * * cronic certbot renew

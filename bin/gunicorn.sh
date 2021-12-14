@@ -2,7 +2,7 @@
 
 NAME="gunicorn"
 DJANGODIR=/srv
-SOCKFILE=/var/run/gunicorn.sock
+SOCKFILE=/var/run/wpr/gunicorn.sock
 GROUP=django
 NUM_WORKERS=1
 NUM_THREADS=5
