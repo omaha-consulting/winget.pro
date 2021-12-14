@@ -65,3 +65,41 @@ Now you can inspect the traffic in the output of `sslproxy` when you perform
 `winget` commands such as:
 
     winget search "search term" -s ms
+
+## Deploying
+
+Upload [`install.sh`](install.sh) and a `.bashrc` file with the settings below
+to a Debian 11 server, then run `install.sh` as root.
+
+```bash
+# Email address of server administrator.
+export ADMIN_EMAIL=michael.herrmann@omaha-consulting.com
+
+# The domain under which this server runs
+export HOST_NAME=winget.sh
+
+# The server that hosts this repository:
+export GIT_SERVER=github.com
+
+# The path on GIT_SERVER where this repository lies:
+export GIT_REPO_NAME=omaha-consulting/winget-private-repository
+
+# The branch of this repository that should be checked out:
+export GIT_REPO_BRANCH=main
+
+# The SSH public key for fetching this repository from GIT_SERVER:
+export GIT_REPO_PUBKEY="ssh-rsa ... user@machine"
+
+# The SSH private key for fetching this repository from GIT_SERVER.
+# "\n"s separate lines:
+export GIT_REPO_PRIVKEY="-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----"
+
+# Emails to the admin will be sent via this account:
+export SMTP_HOST=email-smtp.eu-central-1.amazonaws.com
+export SMTP_USER=ABC123...
+export SMTP_PASSWORD=aBc1234...
+export SMTP_FROM=winget@servers.omaha-consulting.com
+
+# Django SECRET_KEY:
+export SECRET_KEY=atLeast50RandomChars
+```

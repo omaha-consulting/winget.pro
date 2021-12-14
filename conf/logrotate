@@ -1,0 +1,29 @@
+/var/log/nginx-access.log
+/var/log/nginx-error.log {
+    su root django
+    create 0640 www-data adm
+    missingok
+    rotate 5
+    size 100M
+    compress
+    delaycompress
+    notifempty
+    sharedscripts
+    postrotate
+        nginx -s reopen
+    endscript
+}
+
+/var/log/gunicorn.log {
+    su root django
+    create 0640 root django
+    missingok
+    rotate 5
+    size 100M
+    compress
+    delaycompress
+    notifempty
+    postrotate
+        kill -USR2 `cat /run/supervisord.pid`
+    endscript
+}

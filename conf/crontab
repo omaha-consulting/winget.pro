@@ -1,0 +1,2 @@
+MAILTO=$ADMIN_EMAIL
+26 2 */7 * * cronic certbot renew
