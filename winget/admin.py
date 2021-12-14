@@ -68,6 +68,12 @@ class VersionAdmin(ModelAdmin):
             return qs
         return qs.filter(package__tenant__user=request.user)
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'package' and not request.user.is_superuser:
+            kwargs['queryset'] = \
+                Package.objects.filter(tenant__user=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 admin.site.register(Package, PackageAdmin)
 admin.site.register(Version, VersionAdmin)
