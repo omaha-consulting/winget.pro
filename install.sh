@@ -127,7 +127,7 @@ log 'Collecting static files...'
 su -c '/srv/bin/manage.sh collectstatic --noinput | grep -v "INFO\|DEBUG"' - django
 
 log 'Initializing run/ directory...'
-/srv/omaha/bin/init-run-dir.sh
+/srv/bin/init-run-dir.sh
 
 log 'Installing Supervisor...'
 apt-get install supervisor -y > /dev/null
