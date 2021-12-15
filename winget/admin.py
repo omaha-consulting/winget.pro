@@ -47,13 +47,19 @@ class InstallerInline(StackedInline):
     model = Installer
     form = InstallerForm
     readonly_fields = ('sha256',)
-    extra = 0
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
         return qs.filter(version__package__tenant__user=request.user)
+
+    def get_extra(self, request, obj: Version = None, **kwargs):
+        # Show one empty Installer form when the version does not yet have an
+        # associated installer. Otherwise, don't add another Installer form.
+        if obj and obj.installer_set.exists():
+            return 0
+        return 1
 
 
 class VersionAdmin(ModelAdmin):
