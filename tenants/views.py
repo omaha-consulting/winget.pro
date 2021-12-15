@@ -21,7 +21,7 @@ def signup(request):
                 )
             else:
                 login(request, tenant.user)
-                return redirect(reverse('admin:winget_package_changelist'))
+                return redirect(reverse('admin:index'))
     else:
         form = SignupForm()
     return render(request, 'tenants/signup.html', {'form': form})
