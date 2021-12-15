@@ -6,9 +6,8 @@
         <h1>Welcome!</h1>
         <p>
             Use the
-            <a href="{% url 'admin:winget_package_changelist' %}">
-                winget link</a>
-            on the left to add packages and versions.
+            <a href="{% url 'admin:winget_package_changelist' %}">Winget</a>
+            link on the left to add packages and versions.
         </p>
         <ul>
             <li>
@@ -34,6 +33,36 @@
             To install a package from this source, use the following command:
         </p>
         <pre>winget install &lt;your package name&gt; -s {{ request.get_host }}</pre>
+        <p>
+            To play with this, you can for example install the open source
+            <a href="https://github.com/alacritty/alacritty">Alacritty</a>
+            terminal emulator:
+        </p>
+        <ol>
+            <li>
+                Create a package with name <em>Alacritty</em>
+                <a href="{% url 'admin:winget_package_add' %}">here</a>.
+            </li>
+            <li>
+                Upload Alacritty's
+                <a href="https://github.com/alacritty/alacritty/releases/download/v0.9.0/Alacritty-v0.9.0-installer.msi">
+                    installer</a>
+                on the
+                <a href="{% url 'admin:winget_version_add' %}">Add version</a>
+                page.
+            </li>
+            <li>
+                Install Alacritty with
+                <code>winget install Alacritty -s {{ request.get_host }}</code>.
+            </li>
+            <li>
+                Uninstall it again with <code>winget uninstall Alacritty</code>.
+            </li>
+        </ol>
+        <p>
+            To remove the winget source you added above, you can use:
+        </p>
+        <pre>winget source remove {{ request.get_host }}</pre>
     </div>
 {% endblock %}
 
