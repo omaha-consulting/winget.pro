@@ -44,23 +44,33 @@
                 <a href="{% url 'admin:winget_package_add' %}">here</a>.
             </li>
             <li>
-                Upload Alacritty's
-                <a href="https://github.com/alacritty/alacritty/releases/download/v0.9.0/Alacritty-v0.9.0-installer.msi">
-                    installer</a>
-                on the
                 <a href="{% url 'admin:winget_version_add' %}">Add version</a>
-                page.
+                0.8.0 for Alacritty, uploading its
+                <a href="https://github.com/alacritty/alacritty/releases/download/v0.8.0/Alacritty-v0.8.0-installer.msi">
+                    official MSI installer</a>.
             </li>
             <li>
-                Install Alacritty with
-                <code>winget install Alacritty -s {{ request.get_host }}</code>.
+                Install your package with
+                <code>winget install alacritty -s {{ request.get_host }}</code>.
             </li>
             <li>
-                Uninstall it again with <code>winget uninstall Alacritty</code>.
+                To test updates,
+                <a href="{% url 'admin:winget_version_add' %}">add another
+                    version</a>: 0.9.0. Upload the associated
+                <a href="https://github.com/alacritty/alacritty/releases/download/v0.9.0/Alacritty-v0.9.0-installer.msi">
+                    installer</a>.
+            </li>
+            <li>
+                Upgrade your package via: <code>winget upgrade alacritty</code>.
+                This should download and install the newer version.
+            </li>
+            <li>
+                Uninstall Alacritty again via
+                <code>winget uninstall alacritty</code>.
             </li>
         </ol>
         <p>
-            To remove the winget source you added above, you can use:
+            To remove the winget source you added at the beginning, you can use:
         </p>
         <pre>winget source remove {{ request.get_host }}</pre>
     </div>
