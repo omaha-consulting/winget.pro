@@ -1,0 +1,41 @@
+{% extends "admin/index.html" %}
+{% load i18n static %}
+
+{% block content %}
+    <div id="content-main">
+        <h1>Welcome!</h1>
+        <p>
+            Use the
+            <a href="{% url 'admin:winget_package_changelist' %}">
+                winget link
+            </a>
+            on the left to add packages and versions.
+        </p>
+        <ul>
+            <li>
+                A <em>package</em> is an application, such as Visual Studio
+                Code.
+            </li>
+            <li>
+                A <em>version</em> is a specific release of a package, such as
+                1.2.3.4.
+            </li>
+            <li>
+                Every version has at least one <em>installer</em>. These are
+                often .exes that install the version on a user's system.
+            </li>
+        </ul>
+        <p>
+            To set up your repository on a system, use your unique URL:
+        </p>
+        <pre>winget source add -n {{ request.get_host }} -a https://{{ request.get_host }}{% url 'winget:index' tenant_uuid=request.user.tenant_set.get.uuid %} -t "Microsoft.Rest"</pre>
+        <p>
+            This creates a winget source with name
+            <code>{{ request.get_host }}</code>.
+            To install a package from this source, use the following command:
+        </p>
+        <pre>winget install &lt;your package name&gt; -s {{ request.get_host }}</pre>
+    </div>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

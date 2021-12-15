@@ -1,10 +1,19 @@
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
 from .models import Package
 from .util import load_tenant, return_jsonresponse, parse_jsonrequest
+
+
+@require_GET
+@load_tenant
+def index(*_):
+    # The sole motivation for this view is that we want to be able to
+    # reverse('winget:index') in instructions for setting up the winget source.
+    return HttpResponse("Please log in at /admin for instructions.")
 
 
 @require_GET
@@ -46,6 +55,7 @@ def manifestSearch(_, data, tenant):
         }
         for package in Package.objects.filter(db_query)
     ]
+
 
 @require_GET
 @load_tenant
