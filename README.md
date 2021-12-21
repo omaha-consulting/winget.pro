@@ -98,7 +98,7 @@ export GIT_REPO_PRIVKEY="-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIV
 export SMTP_HOST=email-smtp.eu-central-1.amazonaws.com
 export SMTP_USER=ABC123...
 export SMTP_PASSWORD=aBc1234...
-export SMTP_FROM=winget@servers.omaha-consulting.com
+export SMTP_FROM=api.winget.pro@servers.omaha-consulting.com
 
 # Django SECRET_KEY:
 export SECRET_KEY=atLeast50RandomChars
