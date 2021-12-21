@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Installs winget-private-repository and all dependencies on a fresh Debian 11.
+# Installs api.winget.pro and all dependencies on a fresh Debian 11.
 # To use, upload this file and .bashrc to /root, then execute this script as
 # root.
 

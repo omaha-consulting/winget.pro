@@ -82,7 +82,7 @@ export HOST_NAME=api.winget.pro
 export GIT_SERVER=github.com
 
 # The path on GIT_SERVER where this repository lies:
-export GIT_REPO_NAME=omaha-consulting/winget-private-repository
+export GIT_REPO_NAME=omaha-consulting/api.winget.pro
 
 # The branch of this repository that should be checked out:
 export GIT_REPO_BRANCH=main

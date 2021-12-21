@@ -18,10 +18,7 @@ class APITest(TestCase):
 
     def test_information_required_parts(self):
         data = self._get('information')['Data']
-        self.assertEqual(
-            'github.com/omaha-consulting/winget-private-repository',
-            data['SourceIdentifier']
-        )
+        self.assertEqual('api.winget.pro', data['SourceIdentifier'])
         self.assertEqual(['1.1.0'], data['ServerSupportedVersions'])
 
     def test_search_all_empty(self):

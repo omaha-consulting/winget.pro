@@ -21,8 +21,7 @@ def index(*_):
 @return_jsonresponse
 def information(*_):
     return {
-        'SourceIdentifier':
-            'github.com/omaha-consulting/winget-private-repository',
+        'SourceIdentifier': 'api.winget.pro',
         'ServerSupportedVersions': ['1.1.0']
     }
 
