@@ -1,4 +1,4 @@
-# winget private repository
+# api.winget.pro
 
 A Python implementation of a private winget repository server (/REST API).
 
