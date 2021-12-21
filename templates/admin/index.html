@@ -26,7 +26,10 @@
         <p>
             To set up your repository on a system, use your unique URL:
         </p>
-        <pre>winget source add -n {{ request.get_host }} -a https://{{ request.get_host }}{% url 'winget:index' tenant_uuid=request.user.tenant_set.get.uuid %} -t "Microsoft.Rest"</pre>
+        {# We check for the existence of a tenant_uuid because superusers #}
+        {# might not have one. If we didn't perform this check, then in that #}
+        {# case the `url tenant_uuid=...` call would fail. #}
+        <pre>winget source add -n {{ request.get_host }} -a https://{{ request.get_host }}{% if not request.user.tenant_set.get.uuid and request.user.is_superuser %}/...{% else %}{% url 'winget:index' tenant_uuid=request.user.tenant_set.get.uuid %}{% endif %} -t "Microsoft.Rest"</pre>
         <p>
             This creates a winget source with name
             <code>{{ request.get_host }}</code>.
