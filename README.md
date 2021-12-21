@@ -76,7 +76,7 @@ to a Debian 11 server, then run `install.sh` as root.
 export ADMIN_EMAIL=michael.herrmann@omaha-consulting.com
 
 # The domain under which this server runs
-export HOST_NAME=winget.sh
+export HOST_NAME=api.winget.pro
 
 # The server that hosts this repository:
 export GIT_SERVER=github.com

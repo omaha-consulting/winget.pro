@@ -102,7 +102,7 @@ MEDIA_URL = 'media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SUIT_CONFIG = {
-    'ADMIN_NAME': 'winget Admin',
+    'ADMIN_NAME': 'winget.Pro Admin',
     'MENU': (
         {'app': 'winget', 'icon': 'icon-refresh'},
         {'label': 'Users', 'icon': 'icon-user', 'permissions': 'auth.add_user',
