@@ -1,6 +1,4 @@
-# wpr.sh
-# 
-# Description: desk for doing work on winget-private-repository
+# Description: desk for doing work on api.winget.pro
 # See https://github.com/jamesob/desk.
 
 # Find the directory this script lies in, even when the script is called via a

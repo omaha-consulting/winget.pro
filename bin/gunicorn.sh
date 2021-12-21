@@ -2,11 +2,11 @@
 
 NAME="gunicorn"
 DJANGODIR=/srv
-SOCKFILE=/var/run/wpr/gunicorn.sock
+SOCKFILE=/var/run/django/gunicorn.sock
 GROUP=django
 NUM_WORKERS=1
 NUM_THREADS=5
-DJANGO_WSGI_MODULE=wpr.wsgi
+DJANGO_WSGI_MODULE=core.wsgi
 
 echo "Starting $NAME as `whoami`"
 

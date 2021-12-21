@@ -39,11 +39,11 @@ Then:
 
 Then you can add the REST source (note the `httpS`):
 
-    winget source add -n wpr -a https://localhost:8443/api/ -t "Microsoft.Rest"
+    winget source add -n dev -a https://localhost:8443/api/ -t "Microsoft.Rest"
 
 Then you can perform queries against the new source. Eg.:
 
-    winget search "search term" -s wpr
+    winget search "search term" -s dev
 
 ## Sniffing Microsoft's implementation
 

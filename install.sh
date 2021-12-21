@@ -101,8 +101,8 @@ log 'Creating data directory...'
 # work, as it leads to file write access errors when SQLite tries to write to
 # the database. The reason is probably that SQLite creates additional files in
 # the directory.
-mkdir -p /var/lib/wpr
-chown django:django /var/lib/wpr
+mkdir -p /var/lib/django
+chown django:django /var/lib/django
 
 log 'Creating directories for static and media files...'
 mkdir /srv/static
@@ -150,8 +150,8 @@ envsubst < /srv/conf/nginx/server-name > /etc/nginx/includes/server-name
 touch /etc/nginx/includes/ssl
 
 log 'Applying Nginx config...'
-ln -s /srv/conf/nginx/nginx /etc/nginx/sites-available/wpr
-ln -s /etc/nginx/sites-available/wpr /etc/nginx/sites-enabled/wpr
+ln -s /srv/conf/nginx/nginx /etc/nginx/sites-available/django
+ln -s /etc/nginx/sites-available/django /etc/nginx/sites-enabled/django
 rm /etc/nginx/sites-enabled/default
 
 log 'Starting Nginx...'
@@ -169,7 +169,7 @@ log "The server is now serving requests at $HOST_NAME!"
 # Now do less important things that are not required for serving requests:
 
 log 'Setting up logrotate...'
-ln -s /srv/conf/logrotate /etc/logrotate.d/wpr
+ln -s /srv/conf/logrotate /etc/logrotate.d/django
 
 log 'Setting up crontab...'
 ln -s /srv/bin/cronic /usr/bin/cronic
