@@ -16,3 +16,6 @@ supervisorctl status gunicorn | sed "s/.*[pid ]\([0-9]\+\)\,.*/\1/" | xargs kill
 nginx -s reload
 
 echo `date +%H:%M:%S`': Web server reload complete.'
+
+# Update crontab:
+sed "s/\$ADMIN_EMAIL/$ADMIN_EMAIL/g" /srv/conf/crontab | crontab -

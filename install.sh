@@ -176,8 +176,7 @@ ln -s /srv/conf/logrotate /etc/logrotate.d/django
 
 log 'Setting up crontab...'
 ln -s /srv/bin/cronic /usr/bin/cronic
-sed -i "s/\$ADMIN_EMAIL/$ADMIN_EMAIL/g" /srv/conf/crontab
-crontab /srv/conf/crontab
+sed "s/\$ADMIN_EMAIL/$ADMIN_EMAIL/g" /srv/conf/crontab | crontab -
 
 log 'Setting up automatic updates...'
 apt-get install unattended-upgrades -y > /dev/null
