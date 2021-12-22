@@ -101,6 +101,25 @@ MEDIA_URL = 'media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+ADMINS = []
+
+if os.getenv('ADMIN_EMAIL'):
+    ADMINS.append(('', os.getenv('ADMIN_EMAIL')))
+
+# Email settings
+
+EMAIL_HOST = 'localhost'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_PORT = 25
+EMAIL_USE_SSL = False
+EMAIL_USE_TLS = False
+
+EMAIL_SUBJECT_PREFIX = ''
+
+if os.getenv('SMTP_FROM'):
+    SERVER_EMAIL = os.getenv('SMTP_FROM')
+
 SUIT_CONFIG = {
     'ADMIN_NAME': 'winget.Pro Admin',
     'MENU': (
