@@ -7,6 +7,14 @@ upstream django {
 }
 
 server {
+    # Block requests with invalid HTTP_HOST header, eg. bots querying us by IP.
+    # This in particular fixes Django's error emails "Invalid HTTP_HOST header".
+    listen 80;
+    include includes/ssl;
+    return 400;
+}
+
+server {
     listen 80;
 
     include includes/ssl;
