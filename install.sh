@@ -51,6 +51,9 @@ iptables-save > /etc/iptables/rules.v4
 log 'Installing git...'
 apt-get install git-core -y > /dev/null
 
+log 'Configuring git to avoid warnings when pulling...'
+git config --global pull.rebase true
+
 log 'Creating application users...'
 groupadd --system django
 useradd --system --gid django --shell /bin/bash django
