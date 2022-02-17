@@ -16,7 +16,11 @@ server {
 
 server {
     listen 80;
+    include includes/server-name;
+    return 301 https://$host$request_uri;
+}
 
+server {
     include includes/ssl;
     include includes/server-name;
 
