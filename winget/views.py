@@ -37,11 +37,21 @@ def manifestSearch(_, data, tenant):
         keyword = data['Query']['KeyWord']
         db_query &= Q(name__icontains=keyword)
     if 'Inclusions' in data:
+        inclusions_query = Q()
         for inclusion in data['Inclusions']:
             field = inclusion['PackageMatchField']
             if field == 'PackageName':
                 keyword = inclusion['RequestMatch']['KeyWord']
-                db_query &= Q(name__icontains=keyword)
+                inclusions_query |= Q(name__icontains=keyword)
+            elif field == 'ProductCode':
+                keyword = inclusion['RequestMatch']['KeyWord']
+                # We don't have a ProductCode. Use the identifier instead.
+                inclusions_query |= Q(identifier__icontains=keyword)
+            elif field == 'PackageFamilyName':
+                keyword = inclusion['RequestMatch']['KeyWord']
+                # We don't have family name. Use the name instead.
+                inclusions_query |= Q(name__icontains=keyword)
+        db_query &= inclusions_query
     return [
         {
             'PackageIdentifier': package.identifier,

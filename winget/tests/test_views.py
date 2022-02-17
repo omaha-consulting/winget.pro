@@ -51,6 +51,47 @@ class APITest(TestCase):
             [{'PackageVersion': version.version}], result['Versions']
         )
 
+    def test_list_source(self):
+        # Simulate `winget list` without any extra parameters.
+
+        # Create some apps to test that we do not return superfluous results:
+        self._create_vscode()
+        self._create_powertoys()
+
+        data = self._post('manifestSearch', {
+            'Inclusions': [
+                {
+                    'PackageMatchField': 'ProductCode',
+                    'RequestMatch': {
+                        'KeyWord': 'microsoft edge',
+                        'MatchType': 'Exact'
+                    }
+                },
+                {
+                    'PackageMatchField': 'NormalizedPackageNameAndPublisher',
+                    'RequestMatch': {
+                        'KeyWord': 'microsoftedge',
+                        'MatchType': 'Exact'
+                    }
+                }
+            ]
+        })['Data']
+        self.assertEqual([], data)
+
+        data = self._post('manifestSearch', {
+            'Inclusions': [
+                {
+                    'PackageMatchField': 'PackageFamilyName',
+                    'RequestMatch': {
+                        'KeyWord':
+                            'microsoft.microsoftedge.stable_8wekyb3d8bbwe',
+                        'MatchType': 'Exact'
+                    }
+                }
+            ]
+        })['Data']
+        self.assertEqual([], data)
+
     def _create_vscode(self):
         package = Package.objects.create(
             tenant=self.tenant, identifier='XP9KHM4BK9FZ7Q',
