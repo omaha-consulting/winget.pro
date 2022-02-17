@@ -88,9 +88,11 @@ def packageManifests(request, tenant, identifier):
                         'InstallerType': installer.type,
                         'InstallerUrl':
                             request.build_absolute_uri(installer.file.url),
-                        'InstallerSha256': installer.sha256
+                        'InstallerSha256': installer.sha256,
+                        'Scope': scope
                     }
                     for installer in version.installer_set.all()
+                    for scope in installer.scopes
                 ]
             }
             for version in package.version_set.all()

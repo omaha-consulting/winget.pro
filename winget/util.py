@@ -8,9 +8,10 @@ from django.shortcuts import get_object_or_404
 from tenants.models import Tenant
 
 
-def CharFieldFromChoices(*choices):
+def CharFieldFromChoices(*choices, **kwargs):
     return CharField(
-        choices=[(c, c) for c in choices], max_length=max(map(len, choices))
+        choices=[(c, c) for c in choices], max_length=max(map(len, choices)),
+        **kwargs
     )
 
 

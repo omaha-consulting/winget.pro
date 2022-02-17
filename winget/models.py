@@ -60,6 +60,11 @@ class Installer(Model):
         'msix', 'msi', 'appx', 'exe', 'zip', 'inno', 'nullsoft', 'wix', 'burn',
         'pwa', 'msstore'
     )
+    scope = CharFieldFromChoices(
+        'user', 'machine', 'both', default='both',
+        help_text=
+        "Is this a machine-wide installer, just for the current user, or both?"
+    )
     file = FileField()
     sha256 = CharField(
         max_length=64, validators=[RegexValidator('^[a-fA-F0-9]{64}$')]
@@ -69,6 +74,10 @@ class Installer(Model):
 
     class Meta:
         unique_together = ('version', 'architecture', 'type')
+
+    @property
+    def scopes(self):
+        return ['user', 'machine'] if self.scope == 'both' else [self.scope]
 
     def __str__(self):
         return self.file.url

@@ -92,7 +92,7 @@ class APITest(TestCase):
         })['Data']
         self.assertEqual([], data)
 
-    def _create_vscode(self):
+    def _create_vscode(self, scope='machine'):
         package = Package.objects.create(
             tenant=self.tenant, identifier='XP9KHM4BK9FZ7Q',
             name='Visual Studio Code',
@@ -101,7 +101,7 @@ class APITest(TestCase):
         )
         version = Version.objects.create(version='Unknown', package=package)
         installer = Installer.objects.create(
-            version=version, architecture='x64', type='exe',
+            version=version, architecture='x64', type='exe', scope=scope,
             file=SimpleUploadedFile('vscode-winsta11er-x64.exe', b'1'),
             sha256='6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb78'
                    '75b4b'
@@ -181,8 +181,14 @@ class APITest(TestCase):
         self.assertEqual(package.publisher, locale['Publisher'])
         self.assertEqual(package.name, locale['PackageName'])
         self.assertEqual(package.description, locale['ShortDescription'])
-        self.assertEqual(1, len(version_json['Installers']))
         installer_json, = version_json['Installers']
+        self._check_vscode_installer_json(installer, installer_json)
+
+    def _check_vscode_installer_json(
+        self, installer, installer_json, scope=None
+    ):
+        if scope is None:
+            scope = installer.scope
         self.assertEqual(installer.architecture, installer_json['Architecture'])
         self.assertEqual(installer.type, installer_json['InstallerType'])
         self.assertEqual(
@@ -190,6 +196,17 @@ class APITest(TestCase):
             installer_json['InstallerUrl']
         )
         self.assertEqual(installer.sha256, installer_json['InstallerSha256'])
+        self.assertEqual(scope, installer_json['Scope'])
+
+    def test_scope_both(self):
+        package, version, installer = self._create_vscode(scope='both')
+        resp = self._get('packageManifests', identifier=package.identifier)
+        version_json, = resp['Data']['Versions']
+        installers_json = version_json['Installers']
+        self.assertEqual(2, len(installers_json))  # One for each scope
+        machine, user = sorted(installers_json, key=lambda i: i['Scope'])
+        self._check_vscode_installer_json(installer, machine, 'machine')
+        self._check_vscode_installer_json(installer, user, 'user')
 
     def _get(self, url_name, expect_status=200, **kwargs):
         response = self.client.get(self._reverse(url_name, kwargs))
