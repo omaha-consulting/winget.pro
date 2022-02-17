@@ -41,7 +41,7 @@ def forward(source, destination, prefix=''):
                         print(prefix + line)
                     decoded = decoded.replace(
                         f'\nHost: localhost:{local_port}',
-                        f'\nHost:{dest_host}'
+                        f'\nHost: {dest_host}:{dest_port}'
                     )
                     destination.sendall(decoded.encode('utf-8'))
             else:
