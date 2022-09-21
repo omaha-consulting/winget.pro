@@ -28,7 +28,7 @@ class PackageAdmin(ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not self._is_from_superuser(request):
             obj.tenant = Tenant.objects.get(user=request.user)
-            super().save_model(request, obj, form, change)
+        super().save_model(request, obj, form, change)
 
     def _is_from_superuser(self, request):
         return request.user.is_superuser
