@@ -38,7 +38,7 @@ class Version(Model):
     package = ForeignKey(Package, on_delete=CASCADE)
     version = CharField(
         max_length=128, blank=True,
-        help_text="The package's version (eg. 1.2.3.4)."
+        help_text="The package's version (eg. 0.8.0 or 1.2.3.4)."
     )
     created = DateTimeField(auto_now_add=True)
     modified = DateTimeField(auto_now=True)
