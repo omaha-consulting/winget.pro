@@ -43,14 +43,14 @@
         </p>
         <ol>
             <li>
-                Create a package with name <em>Alacritty</em>
-                <a href="{% url 'admin:winget_package_add' %}">here</a>.
+                Create a package with name <em>Alacritty</em> and identifier <em>{db0555c4-110f-48ca-b25f-98e6ec6fbf15}</em>
+                <a href="{% url 'admin:winget_package_add' %}">here</a>. The name and identifier must be exactly as shown here.
             </li>
             <li>
                 <a href="{% url 'admin:winget_version_add' %}">Add version</a>
                 0.8.0 for Alacritty, uploading its
                 <a href="https://github.com/alacritty/alacritty/releases/download/v0.8.0/Alacritty-v0.8.0-installer.msi">
-                    official MSI installer</a>.
+                    official MSI installer</a>. Again, the version must match exactly what is shown here.
             </li>
             <li>
                 Install your package with
@@ -64,7 +64,7 @@
                     installer</a>.
             </li>
             <li>
-                Upgrade your package via: <code>winget upgrade alacritty</code>.
+                Upgrade your package via: <code>winget upgrade alacritty -s api.winget.pro</code>.
                 This should download and install the newer version.
             </li>
             <li>
