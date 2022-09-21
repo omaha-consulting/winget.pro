@@ -26,3 +26,4 @@ alias release="ssh root@api.winget.pro '/srv/bin/git-update.sh'"
 alias migrate="python manage.py migrate"
 alias makemigrations="python manage.py makemigrations"
 alias tests='python manage.py test'
+alias getbackup="scp root@api.winget.pro:/var/lib/django/db.sqlite3 $PROJECT_DIR/db.sqlite3"
