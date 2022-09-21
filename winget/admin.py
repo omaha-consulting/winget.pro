@@ -15,20 +15,23 @@ class PackageAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        if request.user.is_superuser:
+        if self._is_from_superuser(request):
             return qs
         return qs.filter(tenant__user=request.user)
 
     def get_exclude(self, request, obj=None):
         result = super().get_exclude(request, obj)
-        if not request.user.is_superuser:
+        if not self._is_from_superuser(request):
             result = list(result or []) + ['tenant']
         return result
 
     def save_model(self, request, obj, form, change):
-        obj.tenant = Tenant.objects.get(user=request.user)
-        super().save_model(request, obj, form, change)
+        if not self._is_from_superuser(request):
+            obj.tenant = Tenant.objects.get(user=request.user)
+            super().save_model(request, obj, form, change)
 
+    def _is_from_superuser(self, request):
+        return request.user.is_superuser
 
 class InstallerForm(ModelForm):
     class Meta:
