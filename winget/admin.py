@@ -74,7 +74,7 @@ class VersionAdmin(ModelAdmin):
     inlines = (InstallerInline,)
     list_display = ('created', 'modified', 'package', 'version')
     list_display_links = ('created', 'modified', 'version')
-    list_filter = ('package__name', 'package__publisher')
+    list_filter = ('package', )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
