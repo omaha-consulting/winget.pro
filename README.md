@@ -34,8 +34,7 @@ and `Local Computer/Personal`.
 1. Run `python manage.py migrate`
 2. Run `python manage.py createsuperuser`
 3. Run `python manage.py runserver`
-4. Log into `/admin` and create a **staff** user with all `winget` permissions.
-5. Create a _Tenant_ for the user you created in the previous step.
+4. Log into `/admin` and create a _Tenant_.
 
 ### Run locally
 
@@ -47,7 +46,9 @@ Then:
 
 Then you can add the REST source (note the `httpS`):
 
-    winget source add -n dev -a https://localhost:8443/api/ -t "Microsoft.Rest"
+    winget source add -n dev -a https://localhost:8443/ab... -t "Microsoft.Rest"
+
+Here, `ab...` is the UUID of the Tenant.
 
 Then you can perform queries against the new source. Eg.:
 
