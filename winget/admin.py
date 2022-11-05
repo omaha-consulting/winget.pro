@@ -90,7 +90,8 @@ class VersionAdmin(ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         if request.user.is_superuser:
-            self.list_filter = ['package__tenant'] + list(VersionAdmin.list_filter)
+            self.list_filter = \
+                ['package__tenant'] + list(VersionAdmin.list_filter)
             # Would also like to add package__tenant to list_display and
             # list_display_links. Unfortunately, Django doesn't support it.
         return super().changelist_view(request, extra_context)
