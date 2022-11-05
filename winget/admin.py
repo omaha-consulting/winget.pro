@@ -1,7 +1,8 @@
 from hashlib import sha256
 
 from django.contrib import admin
-from django.contrib.admin import StackedInline, ModelAdmin
+from django.contrib.admin import StackedInline, ModelAdmin, \
+    RelatedOnlyFieldListFilter
 from django.forms import ModelForm
 
 from tenants.models import Tenant
@@ -74,7 +75,7 @@ class VersionAdmin(ModelAdmin):
     inlines = (InstallerInline,)
     list_display = ('created', 'modified', 'package', 'version')
     list_display_links = ('created', 'modified', 'version')
-    list_filter = ('package', )
+    list_filter = (('package', RelatedOnlyFieldListFilter),)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
