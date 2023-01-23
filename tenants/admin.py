@@ -1,6 +1,6 @@
-from django.contrib import admin
 from django.contrib.admin import ModelAdmin
 
+from core import admin
 from .models import Tenant
 
 class TenantAdmin(ModelAdmin):

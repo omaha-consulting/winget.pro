@@ -4,7 +4,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 
 from tenants.models import Tenant
-from winget.models import Package, Version, Installer
+from winget.models import Package, Installer
 
 
 class APITest(TestCase):
@@ -48,7 +48,7 @@ class APITest(TestCase):
         self.assertEqual(package.name, result['PackageName'])
         self.assertEqual(package.publisher, result['Publisher'])
         self.assertEqual(
-            [{'PackageVersion': version.version}], result['Versions']
+            [{'PackageVersion': version}], result['Versions']
         )
 
     def test_list_source(self):
@@ -99,9 +99,10 @@ class APITest(TestCase):
             description='Free, lightweight, extensible code editor.',
             publisher='Microsoft Corporation'
         )
-        version = Version.objects.create(version='Unknown', package=package)
+        version = 'Unknown'
         installer = Installer.objects.create(
-            version=version, architecture='x64', type='exe', scope=scope,
+            package=package, version=version, architecture='x64', type='exe',
+            scope=scope,
             file=SimpleUploadedFile('vscode-winsta11er-x64.exe', b'1'),
             sha256='6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb78'
                    '75b4b'
@@ -115,9 +116,9 @@ class APITest(TestCase):
             description='A set of utilities for power users.',
             publisher='Microsoft Corporation'
         )
-        version = Version.objects.create(version='Unknown', package=package)
+        version = 'Unknown'
         installer = Installer.objects.create(
-            version=version, architecture='x64', type='exe',
+            package=package, version=version, architecture='x64', type='exe',
             file=SimpleUploadedFile('PowerToysSetup-0.51.1-x64.exe', b'2'),
             sha256='d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec1'
                    '3ab35'
@@ -175,7 +176,7 @@ class APITest(TestCase):
         self.assertEqual(package.identifier, result['PackageIdentifier'])
         self.assertEqual(1, len(result['Versions']))
         version_json, = result['Versions']
-        self.assertEqual(version.version, version_json['PackageVersion'])
+        self.assertEqual(version, version_json['PackageVersion'])
         locale = version_json['DefaultLocale']
         self.assertIn('PackageLocale', locale)
         self.assertEqual(package.publisher, locale['Publisher'])

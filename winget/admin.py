@@ -1,11 +1,11 @@
 from hashlib import sha256
 
-from django.contrib import admin
 from django.contrib.admin import StackedInline, ModelAdmin
 from django.forms import ModelForm
 
+from core import admin
 from tenants.models import Tenant
-from .models import Package, Version, Installer
+from .models import Package, Installer, LocalDependency
 
 
 class PackageAdmin(ModelAdmin):
@@ -51,30 +51,25 @@ class InstallerForm(ModelForm):
         return super().save(commit)
 
 
-class InstallerInline(StackedInline):
-    model = Installer
-    form = InstallerForm
-    readonly_fields = ('sha256',)
+class LocalDependencyInline(StackedInline):
+    model = LocalDependency
+    extra = 0
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
-        return qs.filter(version__package__tenant__user=request.user)
-
-    def get_extra(self, request, obj: Version = None, **kwargs):
-        # Show one empty Installer form when the version does not yet have an
-        # associated installer. Otherwise, don't add another Installer form.
-        if obj and obj.installer_set.exists():
-            return 0
-        return 1
+        return qs.filter(installer__package__tenant__user=request.user)
 
 
-class VersionAdmin(ModelAdmin):
-    inlines = (InstallerInline,)
-    list_display = ('created', 'modified', 'package', 'version')
-    list_display_links = ('created', 'modified', 'version')
-    list_filter = ('package', )
+class InstallerAdmin(ModelAdmin):
+    form = InstallerForm
+    inlines = (LocalDependencyInline,)
+    list_display = \
+        ('package', 'version', 'architecture', 'type', 'created', 'modified')
+    list_display_links = ('package', 'created', 'modified')
+    list_filter = ('package', 'version')
+    readonly_fields = ('sha256',)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -90,7 +85,8 @@ class VersionAdmin(ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         if _is_from_superuser(request):
-            self.list_filter = ['package__tenant'] + list(VersionAdmin.list_filter)
+            self.list_filter = ['package__tenant'] + \
+                               list(InstallerAdmin.list_filter)
             # Would also like to add package__tenant to list_display and
             # list_display_links. Unfortunately, Django doesn't support it.
         return super().changelist_view(request, extra_context)
@@ -99,5 +95,6 @@ class VersionAdmin(ModelAdmin):
 def _is_from_superuser(request):
     return request.user.is_superuser
 
-admin.site.register(Package, PackageAdmin)
-admin.site.register(Version, VersionAdmin)
+
+admin.site.register_with_order(Package, PackageAdmin, 0)
+admin.site.register_with_order(Installer, InstallerAdmin, 1)

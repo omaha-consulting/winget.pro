@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -58,8 +59,10 @@ def manifestSearch(_, data, tenant):
             'PackageName': package.name,
             'Publisher': package.publisher,
             'Versions': [
-                {'PackageVersion': version.version}
-                for version in package.version_set.all()
+                {'PackageVersion': version}
+                for version in set(
+                    package.installer_set.values_list('version', flat=True)
+                )
             ]
         }
         for package in Package.objects.filter(db_query)
@@ -71,30 +74,43 @@ def manifestSearch(_, data, tenant):
 @return_jsonresponse
 def packageManifests(request, tenant, identifier):
     package = get_object_or_404(Package, tenant=tenant, identifier=identifier)
+    versions = defaultdict(list)
+    for installer in package.installer_set.all():
+        local_deps = []
+        for local_dep in installer.localdependency_set.all():
+            local_dep_dict = {
+                'PackageIdentifier': local_dep.installer.package.identifier
+            }
+            if local_dep.minimum_version:
+                local_dep_dict['MinimumVersion'] = local_dep.minimum_version
+            local_deps.append(local_dep_dict)
+        for scope in installer.scopes:
+            versions[installer.version].append(
+                {
+                    'Architecture': installer.architecture,
+                    'InstallerType': installer.type,
+                    'InstallerUrl':
+                        request.build_absolute_uri(installer.file.url),
+                    'InstallerSha256': installer.sha256,
+                    'Scope': scope,
+                    'Dependencies': {
+                        'PackageDependencies': local_deps
+                    }
+                }
+            )
     return {
         'PackageIdentifier': package.identifier,
         'Versions': [
             {
-                'PackageVersion': version.version,
+                'PackageVersion': version,
                 'DefaultLocale': {
                     'PackageLocale': 'en-us',
                     'Publisher': package.publisher,
                     'PackageName': package.name,
                     'ShortDescription': package.description
                 },
-                'Installers': [
-                    {
-                        'Architecture': installer.architecture,
-                        'InstallerType': installer.type,
-                        'InstallerUrl':
-                            request.build_absolute_uri(installer.file.url),
-                        'InstallerSha256': installer.sha256,
-                        'Scope': scope
-                    }
-                    for installer in version.installer_set.all()
-                    for scope in installer.scopes
-                ]
+                'Installers': installers
             }
-            for version in package.version_set.all()
+            for version, installers in versions.items()
         ]
     }

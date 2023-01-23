@@ -34,27 +34,12 @@ class Package(Model):
         return self.name
 
 
-class Version(Model):
+class Installer(Model):
     package = ForeignKey(Package, on_delete=CASCADE)
     version = CharField(
         max_length=128, blank=True,
         help_text="The package's version (eg. 0.8.0 or 1.2.3.4)."
     )
-    created = DateTimeField(auto_now_add=True)
-    modified = DateTimeField(auto_now=True)
-
-    class Meta:
-        unique_together = ('package', 'version')
-
-    def __str__(self):
-        result = self.package.name
-        if self.version:
-            result += ' ' + self.version
-        return result
-
-
-class Installer(Model):
-    version = ForeignKey(Version, on_delete=CASCADE)
     architecture = CharFieldFromChoices('x86', 'x64', 'arm', 'arm64')
     type = CharFieldFromChoices(
         'msix', 'msi', 'appx', 'exe', 'zip', 'inno', 'nullsoft', 'wix', 'burn',
@@ -73,7 +58,7 @@ class Installer(Model):
     modified = DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ('version', 'architecture', 'type')
+        unique_together = ('package', 'version', 'architecture', 'type')
 
     @property
     def scopes(self):
@@ -81,3 +66,20 @@ class Installer(Model):
 
     def __str__(self):
         return self.file.url
+
+
+class LocalDependency(Model):
+    installer = ForeignKey(Installer, on_delete=CASCADE)
+    dependency = ForeignKey(Package, on_delete=CASCADE)
+    minimum_version = CharField(
+        max_length=128, blank=True, help_text="Eg. 0.8.0 or 1.2.3.4."
+    )
+    created = DateTimeField(auto_now_add=True)
+    modified = DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "dependency"
+        verbose_name_plural = "local dependencies"
+
+    def __str__(self):
+        return f'{self.installer.package} {self.minimum_version}'
