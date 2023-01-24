@@ -1,6 +1,9 @@
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.db.models import Model, CharField, DateTimeField, ForeignKey, \
     CASCADE, TextField, FileField
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from hashlib import sha256
 from tenants.models import Tenant
 from winget.util import CharFieldFromChoices
 
@@ -80,3 +83,12 @@ class Installer(Model):
 
     def __str__(self):
         return self.file.url
+
+
+@receiver(pre_save, sender=Installer)
+def pre_installer_save(sender, instance, **kwargs):
+    m = sha256()
+    instance.file.seek(0)
+    for chunk in instance.file.chunks():
+        m.update(chunk)
+    instance.sha256 = m.digest().hex()

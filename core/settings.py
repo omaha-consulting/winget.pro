@@ -26,7 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'tenants',
-    'winget'
+    'winget',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -128,4 +129,10 @@ SUIT_CONFIG = {
          'models': ('auth.user', 'tenants.tenant')}
     ),
     'CONFIRM_UNSAVED_CHANGES': False
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ]
 }

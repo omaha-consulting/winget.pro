@@ -1,6 +1,7 @@
-from django.urls import re_path
+from django.urls import re_path, include, path
 
 from . import views
+from .api.urls import router as api_router
 
 app_name = 'winget'
 
@@ -21,5 +22,6 @@ urlpatterns = [
     re_path(
         f'^{_tenant_uuid}/packageManifests/(?P<identifier>.*)$',
         views.packageManifests, name='packageManifests'
-    )
+    ),
+    path('api/v1/', include(api_router.urls))
 ]

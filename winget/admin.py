@@ -1,12 +1,11 @@
-from hashlib import sha256
-
 from django.contrib import admin
 from django.contrib.admin import StackedInline, ModelAdmin, \
     RelatedOnlyFieldListFilter
 from django.forms import ModelForm
-
 from tenants.models import Tenant
-from .models import Package, Version, Installer
+from winget.authorization import get_package_queryset, get_installer_queryset, \
+    get_version_queryset
+from winget.models import Package, Version, Installer
 
 
 class PackageAdmin(ModelAdmin):
@@ -15,10 +14,7 @@ class PackageAdmin(ModelAdmin):
     list_filter = ('publisher',)
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        return qs.filter(tenant__user=request.user)
+        return get_package_queryset(request)
 
     def get_exclude(self, request, obj=None):
         result = super().get_exclude(request, obj)
@@ -44,13 +40,6 @@ class InstallerForm(ModelForm):
         model = Installer
         fields = '__all__'
 
-    def save(self, commit=True):
-        m = sha256()
-        for chunk in self.instance.file.chunks():
-            m.update(chunk)
-        self.instance.sha256 = m.digest().hex()
-        return super().save(commit)
-
 
 class InstallerInline(StackedInline):
     model = Installer
@@ -58,10 +47,7 @@ class InstallerInline(StackedInline):
     readonly_fields = ('sha256',)
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        return qs.filter(version__package__tenant__user=request.user)
+        return get_installer_queryset(request)
 
     def get_extra(self, request, obj: Version = None, **kwargs):
         # Show one empty Installer form when the version does not yet have an
@@ -78,10 +64,7 @@ class VersionAdmin(ModelAdmin):
     list_filter = (('package', RelatedOnlyFieldListFilter),)
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        return qs.filter(package__tenant__user=request.user)
+        return get_version_queryset(request)
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'package' and not request.user.is_superuser:
