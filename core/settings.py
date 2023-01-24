@@ -17,6 +17,11 @@ ALLOWED_HOSTS = []
 if os.getenv('HOST_NAME'):
     ALLOWED_HOSTS.append(os.getenv('HOST_NAME'))
 
+if os.getenv('ALT_HOST_NAMES'):
+    for host_name in os.getenv('ALT_HOST_NAMES').split(' '):
+        assert host_name, f'Invalid format for ALT_HOST_NAMES.'
+        ALLOWED_HOSTS.append(host_name)
+
 INSTALLED_APPS = [
     'suit',
     'django.contrib.admin',

@@ -163,11 +163,13 @@ service nginx restart
 log 'Generating SSL certificates...'
 apt-get install certbot python3-certbot-nginx -y > /dev/null
 certbot register --quiet --email $ADMIN_EMAIL --agree-tos
-certbot certonly --nginx --quiet --cert-name main -d $HOST_NAME
+# `eval` is necessary to pass "-d" "my.com" instead of "-d my.com".
+# The ${...:+ ...} constructs "-d a.com -d b.com" if $ALT_HOST_NAMES is set.
+eval "certbot certonly --nginx --quiet --cert-name main -d $HOST_NAME${ALT_HOST_NAMES:+ -d ${ALT_HOST_NAMES// / -d }}"
 ln -sf /srv/conf/nginx/ssl /etc/nginx/includes/ssl
 service nginx restart
 
-log "The server is now serving requests at $HOST_NAME!"
+log "The server is now serving requests at $HOST_NAME$ALT_HOST_NAMES!"
 
 # Now do less important things that are not required for serving requests:
 

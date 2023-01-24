@@ -81,11 +81,14 @@ Upload [`install.sh`](install.sh) and a `.bashrc` file with the settings below
 to a Debian 11 server, then run `install.sh` as root.
 
 ```bash
-# Email address of server administrator.
+# Email address of server administrator:
 export ADMIN_EMAIL=michael.herrmann@omaha-consulting.com
 
-# The domain under which this server runs
+# The domain under which this server runs:
 export HOST_NAME=api.winget.pro
+
+# A space-separated list of alternative host names:
+export ALT_HOST_NAMES=
 
 # The server that hosts this repository:
 export GIT_SERVER=github.com
