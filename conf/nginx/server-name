@@ -1,1 +1,1 @@
-server_name $HOST_NAME$ALT_HOST_NAMES;
+server_name $HOST_NAME $ALT_HOST_NAMES;
