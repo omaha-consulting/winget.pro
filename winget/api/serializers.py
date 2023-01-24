@@ -1,5 +1,5 @@
-from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
+from winget.authorization import get_package_queryset, get_version_queryset
 from winget.models import Package, Version, Installer
 
 
@@ -10,15 +10,8 @@ class PackageSerializer(ModelSerializer):
         fields = ('id', 'identifier', 'name', 'publisher', 'description')
 
     def create(self, validated_data):
-        validated_data['tenant'] = _get_tenant(self)
+        validated_data['tenant'] = self.context['request'].user.tenant_set.get()
         return super().create(validated_data)
-
-
-class UserCanAccessPackage:
-    requires_context = True
-    def __call__(self, value, serializer):
-        if value['package'].tenant != _get_tenant(serializer):
-            raise ValidationError('Unknown package.')
 
 
 class VersionSerializer(ModelSerializer):
@@ -26,23 +19,26 @@ class VersionSerializer(ModelSerializer):
     class Meta:
         model = Version
         fields = ('id', 'package', 'version')
-        validators = [UserCanAccessPackage()]
 
-
-class UserCanAccessVersion:
-    requires_context = True
-    def __call__(self, value, serializer):
-        if value['version'].package.tenant != _get_tenant(serializer):
-            raise ValidationError('Unknown package.')
+    def get_extra_kwargs(self):
+        result = super().get_extra_kwargs()
+        result['package'] = {
+            'queryset': get_package_queryset(self.context['request'])
+        }
+        return result
 
 
 class InstallerSerializer(ModelSerializer):
+
     class Meta:
         model = Installer
         fields = \
 	        ('id', 'version', 'architecture', 'type', 'scope', 'file', 'sha256')
         read_only_fields = ['sha256']
-        validators = [UserCanAccessVersion()]
 
-def _get_tenant(serializer):
-    return serializer.context['request'].user.tenant_set.get()
+    def get_extra_kwargs(self):
+        result = super().get_extra_kwargs()
+        result['version'] = {
+            'queryset': get_version_queryset(self.context['request'])
+        }
+        return result
