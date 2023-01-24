@@ -1,7 +1,6 @@
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.db.models import Model, CharField, DateTimeField, ForeignKey, \
     CASCADE, TextField, FileField
-
 from tenants.models import Tenant
 from winget.util import CharFieldFromChoices
 
