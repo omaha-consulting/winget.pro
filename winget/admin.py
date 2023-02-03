@@ -27,13 +27,17 @@ class PackageAdmin(ModelAdmin):
             obj.tenant = Tenant.objects.get(user=request.user)
         super().save_model(request, obj, form, change)
 
-    def changelist_view(self, request, extra_context=None):
+    def get_list_display(self, request):
+        result = list(super().get_list_display(request))
         if request.user.is_superuser:
-            self.list_display = ['tenant'] + list(PackageAdmin.list_display)
-            self.list_display_links = self.list_display
-            self.list_filter = ['tenant'] + list(PackageAdmin.list_filter)
-        return super().changelist_view(request, extra_context)
+            return ['tenant'] + result
+        return result
 
+    def get_list_filter(self, request):
+        result = list(super().get_list_filter(request))
+        if request.user.is_superuser:
+            return ['tenant'] + result
+        return result
 
 class InstallerForm(ModelForm):
     class Meta:
@@ -60,7 +64,7 @@ class InstallerInline(StackedInline):
 class VersionAdmin(ModelAdmin):
     inlines = (InstallerInline,)
     list_display = ('created', 'modified', 'package', 'version')
-    list_display_links = ('created', 'modified', 'version')
+    list_display_links = ('created', 'modified', 'version', 'package')
     list_filter = (('package', RelatedOnlyFieldListFilter),)
 
     def get_queryset(self, request):
@@ -72,13 +76,13 @@ class VersionAdmin(ModelAdmin):
                 Package.objects.filter(tenant__user=request.user)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def changelist_view(self, request, extra_context=None):
+    def get_list_filter(self, request):
+        # Would also like to add package__tenant to list_display and
+        # list_display_links. Unfortunately, Django doesn't support it.
+        result = list(super().get_list_filter(request))
         if request.user.is_superuser:
-            self.list_filter = \
-                ['package__tenant'] + list(VersionAdmin.list_filter)
-            # Would also like to add package__tenant to list_display and
-            # list_display_links. Unfortunately, Django doesn't support it.
-        return super().changelist_view(request, extra_context)
+            return ['package__tenant'] + result
+        return result
 
 
 admin.site.register(Package, PackageAdmin)
