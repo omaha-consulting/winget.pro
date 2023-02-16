@@ -51,6 +51,13 @@ class APITest(TestCase):
             [{'PackageVersion': version.version}], result['Versions']
         )
 
+        # Test that the package isn't returned when it has no version. The
+        # motivation for this is that `winget search` gives an error when the
+        # REST source returns a package with 'Versions' empty or nonexistent.
+        version.delete()
+        data = self._post('manifestSearch', request)['Data']
+        self.assertEqual([], data)
+
     def test_list_source(self):
         # Simulate `winget list` without any extra parameters.
 

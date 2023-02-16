@@ -63,6 +63,7 @@ def manifestSearch(_, data, tenant):
             ]
         }
         for package in Package.objects.filter(db_query)
+        if package.version_set.exists()
     ]
 
 
