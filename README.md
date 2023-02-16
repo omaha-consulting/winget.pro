@@ -56,24 +56,16 @@ Then you can perform queries against the new source. Eg.:
 
 ## Sniffing Microsoft's implementation
 
-Look at the `msstore` source shown by `winget source list`. Typically, it is:
+Microsoft's implementation is the `msstore` source shown in
+`winget source list`. Typically, it runs under:
 
     https://storeedgefd.dsx.mp.microsoft.com/v9.0
 
-Start `sslproxy` as a man-in-the-middle proxy for the above domain:
-
-    python sslproxy.py 8444 storeedgefd.dsx.mp.microsoft.com 443 
-
-Then you can add the proxied source via:
-
-    winget source add -n ms -a https://localhost:8444/v9.0 -t "Microsoft.Rest"
-
-(Note that we used the path `/v9.0` from above.)
-
-Now you can inspect the traffic in the output of `sslproxy` when you perform
-`winget` commands such as:
-
-    winget search "search term" -s ms
+To sniff it, the easiest way is to use a network inspection tool such as Fiddler
+Classic. This however uses its own SSL certificate, which `winget` rejects. To
+work around this, set the REG_DWORD registry value
+`HKLM\SOFTWARE\Policies\Microsoft\Windows\AppInstaller\EnableBypassCertificatePinningForMicrosoftStore`
+to `1`.
 
 ## Deploying
 
