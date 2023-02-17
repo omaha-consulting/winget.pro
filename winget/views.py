@@ -1,6 +1,6 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
@@ -69,9 +69,21 @@ def manifestSearch(_, data, tenant):
 
 @require_GET
 @load_tenant
-@return_jsonresponse
 def packageManifests(request, tenant, identifier):
-    package = get_object_or_404(Package, tenant=tenant, identifier=identifier)
+    try:
+        package = Package.objects.get(tenant=tenant, identifier=identifier)
+    except ObjectDoesNotExist:
+        # This is a peculiarity / inconsistency of the winget client. The API
+        # design docs say that packageManifests should return 404 when a package
+        # does not exist. But winget doesn't gracefully handle this case.
+        # Instead, it expects HTTP 204.
+        # See: https://github.com/microsoft/winget-cli-restsource/issues/170
+        return HttpResponse(status=204)
+    return _packageManifests(request, package)
+
+
+@return_jsonresponse
+def _packageManifests(request, package):
     return {
         'PackageIdentifier': package.identifier,
         'Versions': [

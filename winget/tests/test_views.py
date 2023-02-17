@@ -191,6 +191,18 @@ class APITest(TestCase):
         installer_json, = version_json['Installers']
         self._check_vscode_installer_json(installer, installer_json)
 
+
+    def test_nonexistent_manifest_returns_204_not_404(self):
+        # This is a peculiarity / inconsistency of the winget client. The API
+        # design docs say that packageManifests should return 404 when a package
+        # does not exist. But winget doesn't gracefully handle this case.
+        # Instead, it expects HTTP 204.
+        # See: https://github.com/microsoft/winget-cli-restsource/issues/170
+        url = self._reverse('packageManifests', {'identifier': 'nonexistent'})
+        response = self.client.get(url)
+        self.assertEqual(204, response.status_code)
+
+
     def _check_vscode_installer_json(
         self, installer, installer_json, scope=None
     ):
