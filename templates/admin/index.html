@@ -38,44 +38,59 @@
         <pre>winget install &lt;your package name&gt; -s {{ request.get_host }}</pre>
         <p>
             To play with this, you can for example install the open source
-            <a href="https://github.com/alacritty/alacritty">Alacritty</a>
-            terminal emulator:
+            <a href="https://github.com/WinMerge/winmerge">WinMerge</a> tool:
         </p>
         <ol>
             <li>
-                Create a package with name <em>Alacritty</em> and identifier <em>{db0555c4-110f-48ca-b25f-98e6ec6fbf15}</em>
+                Create a package with name <em>WinMerge</em> and identifier <em>WinMerge.WinMerge</em>
                 <a href="{% url 'admin:winget_package_add' %}">here</a>. The name and identifier must be exactly as shown here.
             </li>
             <li>
                 <a href="{% url 'admin:winget_version_add' %}">Add version</a>
-                0.8.0 for Alacritty, uploading its
-                <a href="https://github.com/alacritty/alacritty/releases/download/v0.8.0/Alacritty-v0.8.0-installer.msi">
-                    official MSI installer</a>. Select <em>x64</em> as Architecture and <em>msi</em> as Type.
+                2.16.26 for WinMerge, uploading its
+                <a href="https://github.com/WinMerge/winmerge/releases/download/v2.16.26/WinMerge-2.16.26-x64-PerUser-Setup.exe">
+                    official installer</a>.
+                Select <em>x64</em> as Architecture, <em>inno</em> as Type and <em>user</em> as Scope.
             </li>
             <li>
                 Install your package with
-                <code>winget install alacritty -s {{ request.get_host }}</code>.
-            </li>
-            <li>
-                To test updates,
-                <a href="{% url 'admin:winget_version_add' %}">add another
-                    version</a>: 0.9.0. Upload the associated
-                <a href="https://github.com/alacritty/alacritty/releases/download/v0.9.0/Alacritty-v0.9.0-installer.msi">
-                    installer</a>.
-            </li>
-            <li>
-                Upgrade your package via: <code>winget upgrade alacritty -s api.winget.pro</code>.
-                This should download and install the newer version.
-            </li>
-            <li>
-                Uninstall Alacritty again via
-                <code>winget uninstall alacritty</code>.
+                <code>winget install winmerge -s {{ request.get_host }}</code>.
             </li>
         </ol>
         <p>
-            To remove the winget source you added at the beginning, you can use:
+            Note how the installation does not require admin privileges. This is because we selected the <em>user</em>
+            Scope and because the installer performs a per-user installation.
+        </p>
+        <p>
+            To test updates, you can perform the following steps:
+        </p>
+        <ol>
+            <li>
+                <a href="{% url 'admin:winget_version_add' %}">Add another
+                    version</a>: 2.16.28. Upload the associated
+                <a href="https://github.com/WinMerge/winmerge/releases/download/v2.16.28/WinMerge-2.16.28-x64-PerUser-Setup.exe">
+                    installer</a>.
+            </li>
+            <li>
+                Upgrade your package via: <code>winget upgrade winmerge -s {{ request.get_host }}</code>
+            </li>
+        </ol>
+        <p>
+            This should download and install the newer version.
+        </p>
+        <p>
+            To uninstall WinMerge again, you can use the following command:
+        </p>
+        <pre>winget uninstall winmerge</pre>
+        <p>
+            And to remove the winget source you added at the beginning, you can
+            use:
         </p>
         <pre>winget source remove {{ request.get_host }}</pre>
+        <p>
+            If you have any questions, feel free to contact us at
+            <a href="mailto:winget@omaha-consulting.com">winget@omaha-consulting.com</a>.
+        </p>
     </div>
 {% endblock %}
 

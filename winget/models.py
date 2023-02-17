@@ -12,19 +12,20 @@ class Package(Model):
     tenant = ForeignKey(Tenant, on_delete=CASCADE)
     identifier = CharField(
         max_length=128,
-        help_text='Unique identifier for the package (e.g. XP9KHM4BK9FZ7Q).'
+        help_text='Unique identifier for the package (e.g. WinMerge.WinMerge).'
     )
     name = CharField(
         max_length=256, validators=[MinLengthValidator(2)],
-        help_text='Package name (e.g. Visual Studio Code).'
+        help_text='Package name (e.g. WinMerge).'
     )
     publisher = CharField(
         max_length=256, validators=[MinLengthValidator(2)],
-        help_text='Package publisher (eg. Microsoft Corporation)'
+        help_text='Package publisher (eg. Thingamahoochie Software)'
     )
     description = TextField(
         max_length=256, validators=[MinLengthValidator(3)],
-        help_text='Package description (e.g. "Free code editor.")'
+        help_text=
+            'Package description (e.g. "An open source differencing tool.")'
     )
     created = DateTimeField(auto_now_add=True)
     modified = DateTimeField(auto_now=True)
@@ -40,7 +41,7 @@ class Version(Model):
     package = ForeignKey(Package, on_delete=CASCADE)
     version = CharField(
         max_length=128, blank=True,
-        help_text="The package's version (eg. 0.8.0 or 1.2.3.4)."
+        help_text="The package's version (eg. 2.16.26 or 1.2.3.4)."
     )
     created = DateTimeField(auto_now_add=True)
     modified = DateTimeField(auto_now=True)
