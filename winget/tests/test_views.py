@@ -58,6 +58,19 @@ class APITest(TestCase):
         data = self._post('manifestSearch', request)['Data']
         self.assertEqual([], data)
 
+    def test_search_by_id(self):
+        # Simulate `winget search --id XP9KHM4BK9FZ7Q`.
+        request = {
+            'Filters': [{
+                'PackageMatchField': 'PackageIdentifier',
+                'RequestMatch': {
+                    'KeyWord': 'XP9KHM4BK9FZ7Q',
+                    'MatchType': 'Substring'
+                }
+            }]
+        }
+        self.test_search(request)
+
     def test_list_source(self):
         # Simulate `winget list` without any extra parameters.
 
@@ -191,7 +204,6 @@ class APITest(TestCase):
         installer_json, = version_json['Installers']
         self._check_vscode_installer_json(installer, installer_json)
 
-
     def test_nonexistent_manifest_returns_204_not_404(self):
         # This is a peculiarity / inconsistency of the winget client. The API
         # design docs say that packageManifests should return 404 when a package
@@ -201,7 +213,6 @@ class APITest(TestCase):
         url = self._reverse('packageManifests', {'identifier': 'nonexistent'})
         response = self.client.get(url)
         self.assertEqual(204, response.status_code)
-
 
     def _check_vscode_installer_json(
         self, installer, installer_json, scope=None
