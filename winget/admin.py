@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import StackedInline, RelatedOnlyFieldListFilter
 from django.forms import ModelForm
-from tenants.admin_util import TenantModelAdmin
+from tenants.model_admin import TenantModelAdmin
 from winget.authorization import get_installer_queryset
 from winget.models import Package, Version, Installer
 

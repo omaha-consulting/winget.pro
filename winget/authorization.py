@@ -1,4 +1,4 @@
-from tenants.admin_util import filter_for_user
+from tenants.access import filter_for_user
 from winget.models import Package, Installer, Version
 
 def get_package_queryset(request):
