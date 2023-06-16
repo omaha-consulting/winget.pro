@@ -1,45 +1,6 @@
 from django.contrib.admin import ModelAdmin
-from django.core.exceptions import ValidationError, NON_FIELD_ERRORS, \
-    FieldDoesNotExist
-from django.db.models.options import normalize_together
-from django.forms import ModelForm
-from tenants.models import Tenant
-
-
-class TenantModelForm(ModelForm):
-
-    def __int__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.user = None
-
-    def full_clean(self):
-        super().full_clean()
-        if not can_pick_tenant(self.user) and self.instance:
-            self.instance.tenant = Tenant.objects.get(user=self.user)
-            self.validate_unique_for_tenant()
-
-    def validate_unique_for_tenant(self):
-        instance = self.instance
-        meta = instance._meta
-        for unique_together in normalize_together(meta.unique_together):
-            if 'tenant' in unique_together:
-                exclude = [
-                    f.name for f in meta.fields
-                    if f.name != meta.pk.name and f.name not in unique_together
-                ]
-                try:
-                    instance.validate_unique(exclude)
-                except ValidationError:
-                    non_tenant_unique_together = \
-                        [f for f in unique_together if f != 'tenant']
-                    message = instance.unique_error_message(
-                        instance.__class__, non_tenant_unique_together
-                    )
-                    try:
-                        field, = non_tenant_unique_together
-                    except ValueError:
-                        field = NON_FIELD_ERRORS
-                    self.add_error(field, message)
+from tenants.access import can_pick_tenant, filter_for_user, get_tenant_accessor
+from tenants.forms import TenantModelForm
 
 
 class TenantModelAdmin(ModelAdmin):
@@ -96,35 +57,3 @@ class TenantModelAdmin(ModelAdmin):
         if lookup == tenant_accessor + '__id__exact':
             return True
         return super().lookup_allowed(lookup, value)
-
-
-def can_pick_tenant(user):
-    return user.is_superuser
-
-
-def filter_for_user(model, user):
-    tenant_accessor = get_tenant_accessor(model)
-    query = {tenant_accessor + '__user': user}
-    return model.objects.filter(**query)
-
-
-def get_tenant_accessor(model):
-    return _get_tenant_accessor(model, set())
-
-def _get_tenant_accessor(model, visited):
-    visited.add(model)
-    try:
-        tenant_field = model._meta.get_field('tenant')
-    except FieldDoesNotExist:
-        for field in model._meta.get_fields():
-            related_model = field.related_model
-            if related_model and related_model not in visited:
-                try:
-                    subquery = _get_tenant_accessor(related_model, visited)
-                except ValueError:
-                    pass
-                else:
-                    return field.name + '__' + subquery
-        raise ValueError('No tenant field found')
-    else:
-        return tenant_field.name
