@@ -74,10 +74,10 @@ to a Debian 11 server, then run `install.sh` as root.
 
 ```bash
 # Email address of server administrator:
-export ADMIN_EMAIL=michael.herrmann@omaha-consulting.com
+export ADMIN_EMAIL=email@example.com
 
 # The domain under which this server runs:
-export HOST_NAME=api.winget.pro
+export HOST_NAME=some.domain.com
 
 # A space-separated list of alternative host names:
 export ALT_HOST_NAMES=
@@ -102,7 +102,7 @@ export GIT_REPO_PRIVKEY="-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIV
 export SMTP_HOST=email-smtp.eu-central-1.amazonaws.com
 export SMTP_USER=ABC123...
 export SMTP_PASSWORD=aBc1234...
-export SMTP_FROM=api.winget.pro@servers.omaha-consulting.com
+export SMTP_FROM=server@email.com
 
 # Django SECRET_KEY:
 export SECRET_KEY=atLeast50RandomChars
