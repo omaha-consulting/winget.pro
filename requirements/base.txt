@@ -1,6 +1,6 @@
 # Update base-full.txt after any changes!
 
-django==3.2.10
+django==3.2.20
 # django-suit v0.2.28 fixed for Django 3.1+:
 https://github.com/lumocodes/django-suit/archive/suit-0.2.28-for-django3.1.zip#egg=django-suit
 gunicorn==20.1.0
