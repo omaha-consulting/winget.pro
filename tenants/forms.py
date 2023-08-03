@@ -14,7 +14,7 @@ class TenantModelForm(ModelForm):
     def full_clean(self):
         super().full_clean()
         if not can_pick_tenant(self.user) and self.instance:
-            self.instance.tenant = Tenant.objects.get(user=self.user)
+            self.instance.tenant = Tenant.objects.get(users=self.user)
             self.validate_unique_for_tenant()
 
     def validate_unique_for_tenant(self):

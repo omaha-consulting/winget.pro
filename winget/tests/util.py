@@ -1,6 +1,9 @@
+from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, override_settings
 from tempfile import TemporaryDirectory
+
+from tenants.models import Tenant
 
 """
 When a test case uploads files, they by default get placed into media/. This
@@ -25,3 +28,9 @@ class MultiUploadInMemoryFile(SimpleUploadedFile):
 	def read(self):
 		self.seek(0)
 		return super().read()
+
+def create_tenant(username='user@gmail.com', password=None):
+	user = User.objects.create_user(username, password=password)
+	tenant = Tenant.objects.create()
+	tenant.users.add(user)
+	return tenant

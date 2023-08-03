@@ -1,11 +1,10 @@
 from base64 import b64encode
-from django.contrib.auth.models import User
 from django.core.files import File
 from django.urls import reverse
 from rest_framework.test import APIClient
-from tenants.models import Tenant
 from winget.models import Package, Version, Installer
-from winget.tests.util import TestCaseThatUploadsFiles, MultiUploadInMemoryFile
+from winget.tests.util import TestCaseThatUploadsFiles, \
+	MultiUploadInMemoryFile, create_tenant
 
 import json
 
@@ -15,9 +14,9 @@ class APITest(TestCaseThatUploadsFiles):
 		super().setUp()
 		self.client = APIClient()
 		self.credentials = ('user', 'pw')
-		self.tenant = self._create_user_tenant(self.credentials)
+		self.tenant = create_tenant(*self.credentials)
 		self.other_credentials = ('user2', 'pw2')
-		self._create_user_tenant(self.other_credentials)
+		create_tenant(*self.other_credentials)
 	def test_create_package(self):
 		response = self._check_unauthorized_and_request(
 			'post', 'package-list', _PACKAGE_PAYLOAD, self.credentials
@@ -128,9 +127,6 @@ class APITest(TestCaseThatUploadsFiles):
 		self.test_create_version(use_correct_credentials=False)
 	def test_cannot_create_installer_for_other_tenants_version(self):
 		self.test_create_installer(use_correct_credentials=False)
-	def _create_user_tenant(self, credentials):
-		user = User.objects.create_user(credentials[0], password=credentials[1])
-		return Tenant.objects.create(user=user)
 	def _check_unauthorized_and_request(
 		self, method, view_name, data, credentials=None, view_kwargs=None
 	):

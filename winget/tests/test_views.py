@@ -1,10 +1,9 @@
-from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from tenants.models import Tenant
 from winget.models import Package, Version, Installer
+from winget.tests.util import create_tenant
 
 
 class APITest(TestCase):
@@ -12,9 +11,7 @@ class APITest(TestCase):
     def setUp(self):
         super().setUp()
         self.client = Client()
-        self.tenant = Tenant.objects.create(
-            user=User.objects.create_user('user@gmail.com')
-        )
+        self.tenant = create_tenant()
 
     def test_information_required_parts(self):
         data = self._get('information')['Data']

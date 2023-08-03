@@ -7,7 +7,7 @@ def can_pick_tenant(user):
 
 def filter_for_user(model, user):
     tenant_accessor = get_tenant_accessor(model)
-    query = {tenant_accessor + '__user': user}
+    query = {tenant_accessor + '__users': user}
     return model.objects.filter(**query)
 
 

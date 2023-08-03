@@ -1,13 +1,20 @@
 from uuid import uuid4
 
 from django.contrib.auth.models import User
-from django.db.models import Model, ForeignKey, CASCADE, UUIDField
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Model, UUIDField, ManyToManyField
 
 
 class Tenant(Model):
 
-    user = ForeignKey(User, on_delete=CASCADE)
+    users = ManyToManyField(User)
     uuid = UUIDField(unique=True, default=uuid4, editable=False)
 
     def __str__(self):
-        return self.user.username
+        # We have to check that `id` is set to avoid a `RecursionError`.
+        if self.id:
+            try:
+                return self.users.earliest('date_joined').username
+            except ObjectDoesNotExist:
+                pass
+        return str(self.uuid)
