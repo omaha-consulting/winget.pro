@@ -106,4 +106,24 @@ export SMTP_FROM=server@email.com
 
 # Django SECRET_KEY:
 export SECRET_KEY=atLeast50RandomChars
+
+DJANGO_SETTINGS_MODULE=core.settings
+
+################## Optional settings for storing files on S3 ###################
+DEFAULT_FILE_STORAGE=storages.backends.s3boto3.S3Boto3Storage
+AWS_STORAGE_BUCKET_NAME=mybucket
+AWS_ACCESS_KEY_ID=ABC....
+AWS_SECRET_ACCESS_KEY=XYZ...
+# Optionally set the access policy for uploaded files. The default is "private".
+# Even with "private", update clients receive access to the files via presigned
+# S3 URLs. Note however that the associated requests to S3 incur a performance
+# overhead. To avoid it, set AWS_S3_CUSTOM_DOMAIN below.
+AWS_DEFAULT_ACL=public-read
+# Optionally supply a CDN domain. You can set this to <bucket>.s3.amazonaws.com
+# to avoid the performance overhead of presigned URLs. This requires that the
+# files in the bucket are publicly readable. For example, via
+# AWS_DEFAULT_ACL=public-read. 
+AWS_S3_CUSTOM_DOMAIN=cdn.winget.pro
+# To use a non-AWS S3 endpoint, you can optionally set the following:
+AWS_S3_HOST=us-east-1.linodeobjects.com
 ```

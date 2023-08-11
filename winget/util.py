@@ -1,5 +1,8 @@
 import json
+import string
 from functools import wraps
+from os.path import splitext
+from random import Random
 
 from django.db.models import CharField
 from django.http import JsonResponse
@@ -39,3 +42,11 @@ def return_jsonresponse(func):
         return JsonResponse({'Data': func(*args, **kwargs)})
 
     return inner
+
+
+def randomize_filename(filename, seed=None, prefix='-', suffix='', length=10):
+    basename, extension = splitext(filename)
+    letters = string.ascii_letters + string.digits
+    random = Random(seed)
+    random_suffix = ''.join(random.choice(letters) for _ in range(length))
+    return basename + prefix + random_suffix + suffix + extension

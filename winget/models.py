@@ -5,7 +5,7 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from hashlib import sha256
 from tenants.models import Tenant
-from winget.util import CharFieldFromChoices
+from winget.util import CharFieldFromChoices, randomize_filename
 
 
 class Package(Model):
@@ -56,6 +56,13 @@ class Version(Model):
         return result
 
 
+def installer_upload_to(instance, filename):
+    # Randomize the upload path. This prevents users from guessing it and
+    # prevents clashes.
+    randomized_filename = randomize_filename(filename)
+    return f'{instance.version.package.tenant.uuid}/{randomized_filename}'
+
+
 class Installer(Model):
     version = ForeignKey(Version, on_delete=CASCADE)
     architecture = CharFieldFromChoices('x86', 'x64', 'arm', 'arm64')
@@ -68,7 +75,7 @@ class Installer(Model):
         help_text=
         "Is this a machine-wide installer, just for the current user, or both?"
     )
-    file = FileField()
+    file = FileField(upload_to=installer_upload_to)
     sha256 = CharField(
         max_length=64, validators=[RegexValidator('^[a-fA-F0-9]{64}$')]
     )

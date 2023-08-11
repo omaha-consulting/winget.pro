@@ -1,7 +1,8 @@
-import os
+from django.conf import global_settings
+from core.util import get_bool_from_env
 from pathlib import Path
 
-from core.util import get_bool_from_env
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -104,6 +105,19 @@ STATIC_ROOT = BASE_DIR / 'static'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = 'media/'
+
+# Optional settings for serving files from S3 with django-storages:
+DEFAULT_FILE_STORAGE = os.getenv('DEFAULT_FILE_STORAGE') or \
+                       global_settings.DEFAULT_FILE_STORAGE
+
+if DEFAULT_FILE_STORAGE == 'storages.backends.s3boto3.S3Boto3Storage':
+    AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
+    AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+    AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+    AWS_S3_HOST = os.getenv('AWS_S3_HOST') or 's3.amazonaws.com'
+    AWS_S3_ENDPOINT_URL = 'https://' + AWS_S3_HOST
+    AWS_DEFAULT_ACL = os.getenv('AWS_DEFAULT_ACL')
+    AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
