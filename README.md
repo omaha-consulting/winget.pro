@@ -107,8 +107,6 @@ export SMTP_FROM=server@email.com
 # Django SECRET_KEY:
 export SECRET_KEY=atLeast50RandomChars
 
-DJANGO_SETTINGS_MODULE=core.settings
-
 ################## Optional settings for storing files on S3 ###################
 DEFAULT_FILE_STORAGE=storages.backends.s3boto3.S3Boto3Storage
 AWS_STORAGE_BUCKET_NAME=mybucket
