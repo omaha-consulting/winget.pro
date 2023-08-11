@@ -191,7 +191,13 @@ ln -s /srv/conf/logrotate /etc/logrotate.d/django
 
 log 'Setting up crontab...'
 ln -s /srv/bin/cronic /usr/bin/cronic
-sed "s/\$ADMIN_EMAIL/$ADMIN_EMAIL/g" /srv/conf/crontab | crontab -
+sed "s/\$ADMIN_EMAIL/$ADMIN_EMAIL/g" /srv/conf/crontab > crontab
+if [[ -z "$SSL_CERTIFICATE" ]]
+then
+  sed -Ei "s/^#(.*certbot renew)/\1/g" crontab
+fi
+crontab crontab
+rm crontab
 
 log 'Setting up automatic updates...'
 apt-get install unattended-upgrades -y > /dev/null

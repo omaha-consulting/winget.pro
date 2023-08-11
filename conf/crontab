@@ -1,3 +1,4 @@
 MAILTO=$ADMIN_EMAIL
 @reboot /srv/bin/init-run-dir.sh
-26 2 */7 * * cronic certbot renew
+# Enabled by install.sh when SSL certificates are managed by certbot:
+#26 2 */7 * * cronic certbot renew
