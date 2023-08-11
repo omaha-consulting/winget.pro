@@ -122,7 +122,7 @@ AWS_DEFAULT_ACL=public-read
 # Optionally supply a CDN domain. You can set this to <bucket>.s3.amazonaws.com
 # to avoid the performance overhead of presigned URLs. This requires that the
 # files in the bucket are publicly readable. For example, via
-# AWS_DEFAULT_ACL=public-read. 
+# AWS_DEFAULT_ACL=public-read.
 AWS_S3_CUSTOM_DOMAIN=cdn.winget.pro
 # To use a non-AWS S3 endpoint, you can optionally set the following:
 AWS_S3_HOST=us-east-1.linodeobjects.com
