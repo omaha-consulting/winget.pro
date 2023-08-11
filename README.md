@@ -108,6 +108,7 @@ export SMTP_FROM=server@email.com
 export SECRET_KEY=atLeast50RandomChars
 
 ################## Optional settings for storing files on S3 ###################
+
 export DEFAULT_FILE_STORAGE=storages.backends.s3boto3.S3Boto3Storage
 export AWS_STORAGE_BUCKET_NAME=mybucket
 export AWS_ACCESS_KEY_ID=ABC....
@@ -122,6 +123,13 @@ export AWS_DEFAULT_ACL=public-read
 # files in the bucket are publicly readable. For example, via
 # AWS_DEFAULT_ACL=public-read.
 export AWS_S3_CUSTOM_DOMAIN=cdn.winget.pro
-# To use a non-AWS S3 endpoint, you can optionally set the following:
+# To use a non-AWS S3 endpoint such as Linode, you can optionally set:
 export AWS_S3_HOST=us-east-1.linodeobjects.com
+
+######### Optional settings for using a pre-generated SSL certificate ##########
+
+# The full certificate chain with multiple BEGIN / END CERTIFICATE blocks:
+export SSL_CERTIFICATE="-----BEGIN CERTIFICATE-----\n..."
+# The certificate private key.
+export SSL_CERTIFICATE_KEY="-----BEGIN PRIVATE KEY-----\n..."
 ```

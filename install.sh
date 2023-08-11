@@ -160,12 +160,25 @@ rm /etc/nginx/sites-enabled/default
 log 'Starting Nginx...'
 service nginx restart
 
-log 'Generating SSL certificates...'
-apt-get install certbot python3-certbot-nginx -y > /dev/null
-certbot register --quiet --email $ADMIN_EMAIL --agree-tos
-# `eval` is necessary to pass "-d" "my.com" instead of "-d my.com".
-# The ${...:+ ...} constructs "-d a.com -d b.com" if $ALT_HOST_NAMES is set.
-eval "certbot certonly --nginx --quiet --cert-name main -d $HOST_NAME${ALT_HOST_NAMES:+ -d ${ALT_HOST_NAMES// / -d }}"
+if [[ -z "$SSL_CERTIFICATE" ]]
+then
+  log 'Generating SSL certificates...'
+  apt-get install certbot python3-certbot-nginx -y > /dev/null
+  certbot register --quiet --email $ADMIN_EMAIL --agree-tos
+  # `eval` is necessary to pass "-d" "my.com" instead of "-d my.com".
+  # The ${...:+ ...} constructs "-d a.com -d b.com" if $ALT_HOST_NAMES is set.
+  eval "certbot certonly --nginx --quiet --cert-name main -d $HOST_NAME${ALT_HOST_NAMES:+ -d ${ALT_HOST_NAMES// / -d }}"
+else
+  log 'Using provided SSL certificate...'
+  mkdir -p /etc/letsencrypt/live/main
+  chmod 700 /etc/letsencrypt/live
+  echo "$SSL_CERTIFICATE" > /etc/letsencrypt/live/main/fullchain.pem
+  chmod 644 /etc/letsencrypt/live/main/fullchain.pem
+  echo "$SSL_CERTIFICATE_KEY" > /etc/letsencrypt/live/main/privkey.pem
+  chmod 600 /etc/letsencrypt/live/main/privkey.pem
+fi
+
+log 'Applying SSL config...'
 ln -sf /srv/conf/nginx/ssl /etc/nginx/includes/ssl
 service nginx restart
 
