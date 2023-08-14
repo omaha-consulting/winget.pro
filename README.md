@@ -79,8 +79,7 @@ export HOST_NAME=some.domain.com
 # A space-separated list of alternative host names:
 export ALT_HOST_NAMES=
 
-# Django SECRET_KEY:
-export SECRET_KEY=atLeast50RandomChars
+export DJANGO_SECRET_KEY=atLeast50RandomChars
 
 ##### Optional settings for checking out the server source code with git #######
 
