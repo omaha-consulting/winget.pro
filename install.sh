@@ -172,9 +172,9 @@ else
   log 'Using provided SSL certificate...'
   mkdir -p /etc/letsencrypt/live/main
   chmod 700 /etc/letsencrypt/live
-  echo "$SSL_CERTIFICATE" > /etc/letsencrypt/live/main/fullchain.pem
+  echo -e "$SSL_CERTIFICATE" > /etc/letsencrypt/live/main/fullchain.pem
   chmod 644 /etc/letsencrypt/live/main/fullchain.pem
-  echo "$SSL_CERTIFICATE_KEY" > /etc/letsencrypt/live/main/privkey.pem
+  echo -e "$SSL_CERTIFICATE_KEY" > /etc/letsencrypt/live/main/privkey.pem
   chmod 600 /etc/letsencrypt/live/main/privkey.pem
 fi
 
