@@ -30,6 +30,11 @@ log() {
 log 'Setting hostname...'
 hostnamectl set-hostname "$HOST_NAME"
 
+log 'Setting DEBIAN_FRONTEND for unattended installation...'
+# Ensure apt-get does not prompt for input. At least for Linode VPSs, this is
+# vital for Ubuntu and optional for Debian:
+export DEBIAN_FRONTEND=noninteractive
+
 log 'Updating system...'
 apt-get update > /dev/null
 apt-get upgrade -y > /dev/null
