@@ -159,3 +159,23 @@ REST_FRAMEWORK = {
 # Make sure Django returns https:// URLs when invoked over https.
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'timestamp'
+        }
+    },
+    'formatters': {
+        'timestamp': {
+            'format': '%(asctime)s %(levelname)s %(name)s %(message)s'
+        }
+    },
+    'django': {
+        # Ensure that we see server errors in Gunicorn's log output:
+        'handlers': ['console']
+    }
+}
