@@ -39,25 +39,69 @@ log 'Updating system...'
 apt-get update > /dev/null
 apt-get upgrade -y > /dev/null
 
-log 'Installing iptables-persistent...'
-echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
-echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
-apt-get -y install iptables-persistent -y > /dev/null
+if [[ -n "$GIT_SERVER" ]]
+then
+  # Fetch the server source code with git:
+  log 'Installing git...'
+  apt-get install git-core -y > /dev/null
 
-log 'Configuring iptables...'
-# Only allow local access to port 25:
-iptables -A INPUT -i lo -p tcp --dport 25 -j ACCEPT
-iptables -A INPUT -p tcp --dport 25 -j REJECT
+  log 'Configuring git to avoid warnings when pulling...'
+  git config --global pull.rebase true
 
-# Save iptables rules so they persist across restarts. At the time of this
-# writing, there is no open IPv6 port, so enough to save rules.v*4*.
-iptables-save > /etc/iptables/rules.v4
+  log 'Setting up SSH keys. This is required so we can clone the Git repository without having to supply a password...'
+  mkdir -p .ssh
+  echo "$GIT_REPO_PUBKEY" > .ssh/id_rsa.pub
+  chmod 644 .ssh/id_rsa.pub
+  echo -e "$GIT_REPO_PRIVKEY" > .ssh/id_rsa
+  chmod 600 .ssh/id_rsa
 
-log 'Installing git...'
-apt-get install git-core -y > /dev/null
+  log 'Adding git repository server to known hosts...'
+  ssh-keyscan -H ${GIT_SERVER} >> .ssh/known_hosts 2>/dev/null; chmod 600 .ssh/known_hosts
 
-log 'Configuring git to avoid warnings when pulling...'
-git config --global pull.rebase true
+  log 'Cloning the repository...'
+  git clone -q -b ${GIT_REPO_BRANCH} git@${GIT_SERVER}:${GIT_REPO_NAME}.git /srv
+else
+  if [ ! -d /srv/conf ]
+  then
+    log 'Error: Please place the server source code into /srv.'
+    exit 1
+  fi
+fi
+
+if [[ -n "$SMTP_HOST" ]]
+then
+  log 'Installing Postfix...'
+  debconf-set-selections <<< "postfix postfix/mailname string $HOST_NAME"
+  debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
+  apt-get install postfix mailutils libsasl2-2 ca-certificates libsasl2-modules -y > /dev/null
+
+  log 'Configuring Postfix...'
+  echo "$HOST_NAME" > /etc/mailname
+  chown postfix /etc/mailname
+  envsubst '$SMTP_HOST $HOST_NAME' < /srv/conf/postfix/main.cf > /etc/postfix/main.cf
+  envsubst < /srv/conf/postfix/sasl_passwd > /etc/postfix/sasl_passwd
+  postmap /etc/postfix/sasl_passwd
+  chmod 400 /etc/postfix/sasl_passwd
+  chown postfix /etc/postfix/sasl_passwd
+  envsubst < /srv/conf/postfix/generic > /etc/postfix/generic
+  postmap /etc/postfix/generic
+  chown postfix /etc/postfix/generic
+  /etc/init.d/postfix reload > /dev/null
+
+  log 'Installing iptables-persistent...'
+  echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
+  echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
+  apt-get -y install iptables-persistent -y > /dev/null
+
+  log 'Configuring iptables...'
+  # Only allow local access to port 25:
+  iptables -A INPUT -i lo -p tcp --dport 25 -j ACCEPT
+  iptables -A INPUT -p tcp --dport 25 -j REJECT
+
+  # Save iptables rules so they persist across restarts. At the time of this
+  # writing, there is no open IPv6 port, so enough to save rules.v*4*.
+  iptables-save > /etc/iptables/rules.v4
+fi
 
 log 'Creating application users...'
 groupadd --system django
@@ -66,42 +110,11 @@ mkdir -p /home/django
 chown django /home/django
 chmod 700 /home/django
 
-log 'Setting up SSH keys. This is required so we can clone the Git repository without having to supply a password...'
-mkdir -p .ssh
-echo "$GIT_REPO_PUBKEY" > .ssh/id_rsa.pub
-chmod 644 .ssh/id_rsa.pub
-echo -e "$GIT_REPO_PRIVKEY" > .ssh/id_rsa
-chmod 600 .ssh/id_rsa
-
-log 'Adding git repository server to known hosts...'
-ssh-keyscan -H ${GIT_SERVER} >> .ssh/known_hosts 2>/dev/null; chmod 600 .ssh/known_hosts
-
-log 'Cloning the repository...'
-git clone -q -b ${GIT_REPO_BRANCH} git@${GIT_SERVER}:${GIT_REPO_NAME}.git /srv
-
 log 'Setting up bash profiles...'
 ln -sf /srv/conf/.bash_profile .
 ln -sf /srv/conf/.bash_profile /home/django
 PATH='$PATH' /usr/bin/envsubst < /srv/conf/django.bashrc > /home/django/.bashrc
 chown django:django /home/django/.bashrc
-
-log 'Installing Postfix...'
-debconf-set-selections <<< "postfix postfix/mailname string $HOST_NAME"
-debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
-apt-get install postfix mailutils libsasl2-2 ca-certificates libsasl2-modules -y > /dev/null
-
-log 'Configuring Postfix...'
-echo "$HOST_NAME" > /etc/mailname
-chown postfix /etc/mailname
-envsubst '$SMTP_HOST $HOST_NAME' < /srv/conf/postfix/main.cf > /etc/postfix/main.cf
-envsubst < /srv/conf/postfix/sasl_passwd > /etc/postfix/sasl_passwd
-postmap /etc/postfix/sasl_passwd
-chmod 400 /etc/postfix/sasl_passwd
-chown postfix /etc/postfix/sasl_passwd
-envsubst < /srv/conf/postfix/generic > /etc/postfix/generic
-postmap /etc/postfix/generic
-chown postfix /etc/postfix/generic
-/etc/init.d/postfix reload > /dev/null
 
 log 'Creating data directory...'
 # At the moment, we only have a db.sqlite3 file in this directory. It's tempting
@@ -196,7 +209,12 @@ ln -s /srv/conf/logrotate /etc/logrotate.d/django
 
 log 'Setting up crontab...'
 ln -s /srv/bin/cronic /usr/bin/cronic
-sed "s/\$ADMIN_EMAIL/$ADMIN_EMAIL/g" /srv/conf/crontab > crontab
+if [[ -n "$ADMIN_EMAIL" ]]
+then
+  sed "s/\$ADMIN_EMAIL/$ADMIN_EMAIL/g" /srv/conf/crontab > crontab
+else
+  cp /srv/conf/crontab crontab
+fi
 if [[ -z "$SSL_CERTIFICATE" ]]
 then
   sed -Ei "s/^#(.*certbot renew)/\1/g" crontab

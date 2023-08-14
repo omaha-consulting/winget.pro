@@ -73,39 +73,38 @@ Upload [`install.sh`](install.sh) and a `.bashrc` file with the settings below
 to a Debian 11 server, then run `install.sh` as root.
 
 ```bash
-# Email address of server administrator:
-export ADMIN_EMAIL=email@example.com
-
 # The domain under which this server runs:
 export HOST_NAME=some.domain.com
 
 # A space-separated list of alternative host names:
 export ALT_HOST_NAMES=
 
+# Django SECRET_KEY:
+export SECRET_KEY=atLeast50RandomChars
+
+##### Optional settings for checking out the server source code with git #######
+
 # The server that hosts this repository:
 export GIT_SERVER=github.com
-
 # The path on GIT_SERVER where this repository lies:
 export GIT_REPO_NAME=omaha-consulting/api.winget.pro
-
 # The branch of this repository that should be checked out:
 export GIT_REPO_BRANCH=main
-
 # The SSH public key for fetching this repository from GIT_SERVER:
 export GIT_REPO_PUBKEY="ssh-rsa ... user@machine"
-
 # The SSH private key for fetching this repository from GIT_SERVER.
 # "\n"s separate lines:
 export GIT_REPO_PRIVKEY="-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----"
 
+############## Optional settings for sending server health emails ##############
+
+# Email address of server administrator:
+export ADMIN_EMAIL=email@example.com
 # Emails to the admin will be sent via this account:
 export SMTP_HOST=email-smtp.eu-central-1.amazonaws.com
 export SMTP_USER=ABC123...
 export SMTP_PASSWORD=aBc1234...
 export SMTP_FROM=server@email.com
-
-# Django SECRET_KEY:
-export SECRET_KEY=atLeast50RandomChars
 
 ################## Optional settings for storing files on S3 ###################
 
