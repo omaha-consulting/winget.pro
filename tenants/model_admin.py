@@ -1,17 +1,19 @@
-from django.contrib.admin import ModelAdmin
+from django.contrib.admin import ModelAdmin, StackedInline
 from tenants.access import can_pick_tenant, filter_for_user, get_tenant_accessor
 from tenants.forms import TenantModelForm
 
 
-class TenantModelAdmin(ModelAdmin):
-
-    form = TenantModelForm
-
+class GetQuerySetMixin:
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if can_pick_tenant(request.user):
             return qs
-        return qs & filter_for_user(self.model, request.user)
+        return filter_for_user(self.model, request.user)
+
+
+class TenantModelAdmin(GetQuerySetMixin, ModelAdmin):
+
+    form = TenantModelForm
 
     def get_form(self, request, obj=None, change=False, **kwargs):
         form = super().get_form(request, obj, change, **kwargs)
@@ -57,3 +59,7 @@ class TenantModelAdmin(ModelAdmin):
         if lookup == tenant_accessor + '__id__exact':
             return True
         return super().lookup_allowed(lookup, value)
+
+
+class TenantStackedInline(GetQuerySetMixin, StackedInline):
+    pass

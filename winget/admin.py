@@ -1,8 +1,7 @@
 from django.contrib import admin
-from django.contrib.admin import StackedInline, RelatedOnlyFieldListFilter
+from django.contrib.admin import RelatedOnlyFieldListFilter
 from django.forms import ModelForm
-from tenants.model_admin import TenantModelAdmin
-from winget.authorization import get_installer_queryset
+from tenants.model_admin import TenantModelAdmin, TenantStackedInline
 from winget.models import Package, Version, Installer
 
 
@@ -17,13 +16,10 @@ class InstallerForm(ModelForm):
         fields = '__all__'
 
 
-class InstallerInline(StackedInline):
+class InstallerInline(TenantStackedInline):
     model = Installer
     form = InstallerForm
     readonly_fields = ('sha256',)
-
-    def get_queryset(self, request):
-        return get_installer_queryset(request)
 
     def get_extra(self, request, obj: Version = None, **kwargs):
         # Show one empty Installer form when the version does not yet have an
