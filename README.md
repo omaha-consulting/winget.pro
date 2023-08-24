@@ -123,6 +123,8 @@ export AWS_DEFAULT_ACL=public-read
 export AWS_S3_CUSTOM_DOMAIN=cdn.winget.pro
 # To use a non-AWS S3 endpoint such as Linode, you can optionally set:
 export AWS_S3_HOST=us-east-1.linodeobjects.com
+# Optionally configure the proxy for S3 access:
+export AWS_S3_PROXIES="{'http': 'foo.bar:3128', 'http://hostname': 'foo.bar:4012'}"
 
 ######### Optional settings for using a pre-generated SSL certificate ##########
 
