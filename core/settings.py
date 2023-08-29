@@ -177,8 +177,10 @@ LOGGING = {
             'format': '%(asctime)s %(levelname)s %(name)s %(message)s'
         }
     },
-    'django': {
-        # Ensure that we see server errors in Gunicorn's log output:
-        'handlers': ['console']
+    'loggers': {
+        'django': {
+            # Ensure that we see server errors in Gunicorn's log output:
+            'handlers': ['console']
+        }
     }
 }
