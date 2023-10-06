@@ -9,15 +9,19 @@ from tenants.models import Tenant
 When a test case uploads files, they by default get placed into media/. This
 folder (out of the box) is not cleaned up after the test case is run.
 TestCaseThatUploadsFiles fixes this. It makes sure that files are uploaded into
-a temporary directory. This directory is cleaned up when the Python interpreter
-exits. This is achieved by keeping a global reference to the TemporaryDirectory
-instance. Once this instance goes out of scope, Python guarantees that the
-temporary directory (and its contents) are removed.
+a temporary directory. This directory is cleaned up at the end of each test.
 """
-_MEDIA_ROOT = TemporaryDirectory()
-@override_settings(MEDIA_ROOT=_MEDIA_ROOT.name)
 class TestCaseThatUploadsFiles(TestCase):
-	pass
+	def setUp(self):
+		super().setUp()
+		self.media_root = TemporaryDirectory()
+		media_root_path = self.media_root.name
+		self.settings_override = override_settings(MEDIA_ROOT=media_root_path)
+		self.settings_override.enable()
+	def tearDown(self):
+		super().tearDown()
+		self.settings_override.disable()
+		self.media_root.cleanup()
 
 class MultiUploadInMemoryFile(SimpleUploadedFile):
 	"""
