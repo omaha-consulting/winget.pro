@@ -181,6 +181,9 @@ LOGGING = {
         'django': {
             # Ensure that we see server errors in Gunicorn's log output:
             'handlers': ['console']
+        },
+        'django.request': {
+            'level': 'ERROR' # Avoid "WARNING django.request Forbidden ..." etc.
         }
     }
 }
