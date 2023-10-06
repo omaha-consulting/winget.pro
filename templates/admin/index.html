@@ -4,94 +4,129 @@
 {% block content %}
     <div id="content-main">
         <h1>Welcome!</h1>
-        <p>
-            Use the
-            <a href="{% url 'admin:winget_package_changelist' %}">Winget</a>
-            link on the left to add packages and versions.
-        </p>
-        <ul>
-            <li>
-                A <em>package</em> is an application, such as Visual Studio
-                Code.
-            </li>
-            <li>
-                A <em>version</em> is a specific release of a package, such as
-                1.2.3.4.
-            </li>
-            <li>
-                Every version has at least one <em>installer</em>. These are
-                often .exes that install the version on a user's system.
-            </li>
-        </ul>
-        <p>
-            To set up your repository on a system, use your unique URL
-            {# We check for the existence of a tenant_uuid because superusers #}
-            {# might not have one. If we didn't perform this check, then in #}
-            {# that case the `url tenant_uuid=...` call would fail. #}
-            <code>{{ request.get_host }}{% if not request.user.tenant_set.get.uuid and request.user.is_superuser %}/...{% else %}{% url 'winget:index' tenant_uuid=request.user.tenant_set.get.uuid %}{% endif %}</code>:
-        </p>
+        {% if not request.user.tenant_set.get.uuid and request.user.is_superuser %}
+            <p>
+                It seems that you are a superuser but do not have a
+                <em>tenant</em> associated with your account. You should
+                probably create a non-superuser with an associated tenant.
+                Alternatively, you can also create and associate a tenant with
+                your superuser account.
+            </p>
+            <p>
+                To create a non-superuser, click
+                <a href="{% url 'admin:auth_user_add' %}">here</a>. Once you
+                have created the user, enable their <em>Staff status</em>.
+                Then create a new group called <em>Tenants</em>. Give it all
+                permissions that are prefixed with <code>winget</code>. Make
+                sure to finally <em>Save</em> your changes to the user account.
+                Now the user can log in.
+            </p>
+            <p>
+                This server can host multiple repositories. Every repository is
+                associated with a <em>tenant</em>. The user we created (or your
+                superuser account) still needs to be associated with a tenant to
+                be able to upload versions.
+            </p>
+            <p>
+                To create a tenant, click
+                <a href="{% url 'admin:tenants_tenant_add' %}">here</a>.
+                Select the appropriate user. Once you have done this, they can
+                upload packages. When they log in, they will also see their
+                private repository URL.
+            </p>
+        {% else %}
+            <p>
+                Use the
+                <a href="{% url 'admin:winget_package_changelist' %}">Winget</a>
+                link on the left to add packages and versions.
+            </p>
+            <ul>
+                <li>
+                    A <em>package</em> is an application, such as Visual Studio
+                    Code.
+                </li>
+                <li>
+                    A <em>version</em> is a specific release of a package, such
+                    as 1.2.3.4.
+                </li>
+                <li>
+                    Every version has at least one <em>installer</em>. These are
+                    often .exes that install the version on a user's system.
+                </li>
+            </ul>
+            <p>
+                To set up your repository on a system, use your unique URL
+                <code>{{ request.get_host }}{% url 'winget:index' tenant_uuid=request.user.tenant_set.get.uuid %}</code>:
+            </p>
 
-        <pre>winget source add -n {{ request.get_host }} -a https://{{ request.get_host }}{% if not request.user.tenant_set.get.uuid and request.user.is_superuser %}/...{% else %}{% url 'winget:index' tenant_uuid=request.user.tenant_set.get.uuid %}{% endif %} -t "Microsoft.Rest"</pre>
-        <p>
-            This creates a winget source with name
-            <code>{{ request.get_host }}</code>.
-            To install a package from this source, use the following command:
-        </p>
-        <pre>winget install &lt;your package name&gt; -s {{ request.get_host }}</pre>
-        <p>
-            To play with this, you can for example install the open source
-            <a href="https://github.com/WinMerge/winmerge">WinMerge</a> tool:
-        </p>
-        <ol>
-            <li>
-                Create a package with name <em>WinMerge</em> and identifier <em>WinMerge.WinMerge</em>
-                <a href="{% url 'admin:winget_package_add' %}">here</a>. The name and identifier must be exactly as shown here.
-            </li>
-            <li>
-                <a href="{% url 'admin:winget_version_add' %}">Add version</a>
-                2.16.26 for WinMerge, uploading its
-                <a href="https://github.com/WinMerge/winmerge/releases/download/v2.16.26/WinMerge-2.16.26-x64-PerUser-Setup.exe">
-                    official installer</a>.
-                Select <em>x64</em> as Architecture and <em>user</em> as Scope.
-                Also pick Type <em>inno</em>. This passes the right flags to
-                this installer for performing the installation silently, i.e.
-                without showing a GUI.
-            </li>
-            <li>
-                Install your package with
-                <code>winget install winmerge -s {{ request.get_host }}</code>.
-            </li>
-        </ol>
-        <p>
-            Note how the installation does not require admin privileges. This is because we selected the <em>user</em>
-            Scope and because the installer performs a per-user installation.
-        </p>
-        <p>
-            To test updates, you can perform the following steps:
-        </p>
-        <ol>
-            <li>
-                <a href="{% url 'admin:winget_version_add' %}">Add another
-                    version</a>: 2.16.28. Upload the associated
-                <a href="https://github.com/WinMerge/winmerge/releases/download/v2.16.28/WinMerge-2.16.28-x64-PerUser-Setup.exe">
-                    installer</a>.
-            </li>
-            <li>
-                Upgrade your package via: <code>winget upgrade winmerge -s {{ request.get_host }}</code>
-            </li>
-        </ol>
-        <p>
-            This should download and install the newer version.
-        </p>
-        <p>
-            To uninstall WinMerge again, you can use the following command:
-        </p>
-        <pre>winget uninstall winmerge</pre>
-        <p>
-            And to remove the winget source you added at the beginning, you can
-            use:
-        </p>
-        <pre>winget source remove {{ request.get_host }}</pre>
+            <pre>winget source add -n {{ request.get_host }} -a https://{{ request.get_host }}{% url 'winget:index' tenant_uuid=request.user.tenant_set.get.uuid %} -t "Microsoft.Rest"</pre>
+            <p>
+                This creates a winget source with name
+                <code>{{ request.get_host }}</code>.
+                To install a package from this source, use the following
+                command:
+            </p>
+            <pre>winget install &lt;your package name&gt; -s {{ request.get_host }}</pre>
+            <p>
+                To play with this, you can for example install the open source
+                <a href="https://github.com/WinMerge/winmerge">WinMerge</a>
+                tool:
+            </p>
+            <ol>
+                <li>
+                    Create a package with name <em>WinMerge</em> and identifier
+                    <em>WinMerge.WinMerge</em>
+                    <a href="{% url 'admin:winget_package_add' %}">here</a>.
+                    The name and identifier must be exactly as shown here.
+                </li>
+                <li>
+                    <a href="{% url 'admin:winget_version_add' %}">Add version</a>
+                    2.16.26 for WinMerge, uploading its
+                    <a href="https://github.com/WinMerge/winmerge/releases/download/v2.16.26/WinMerge-2.16.26-x64-PerUser-Setup.exe">
+                        official installer</a>.
+                    Select <em>x64</em> as Architecture and <em>user</em> as
+                    Scope. Also pick Type <em>inno</em>. This passes the right
+                    flags to this installer for performing the installation
+                    silently, i.e. without showing a GUI.
+                </li>
+                <li>
+                    Install your package with
+                    <code>winget install winmerge -s {{ request.get_host }}</code>.
+                </li>
+            </ol>
+            <p>
+                Note how the installation does not require admin privileges.
+                This is because we selected the <em>user</em> Scope and because
+                the installer performs a per-user installation.
+            </p>
+            <p>
+                To test updates, you can perform the following steps:
+            </p>
+            <ol>
+                <li>
+                    <a href="{% url 'admin:winget_version_add' %}">Add another
+                        version</a>: 2.16.28. Upload the associated
+                    <a href="https://github.com/WinMerge/winmerge/releases/download/v2.16.28/WinMerge-2.16.28-x64-PerUser-Setup.exe">
+                        installer</a>.
+                </li>
+                <li>
+                    Upgrade your package via:
+                    <code>winget upgrade winmerge -s {{ request.get_host }}</code>
+                </li>
+            </ol>
+            <p>
+                This should download and install the newer version.
+            </p>
+            <p>
+                To uninstall WinMerge again, you can use the following command:
+            </p>
+            <pre>winget uninstall winmerge</pre>
+            <p>
+                And to remove the winget source you added at the beginning, you
+                can use:
+            </p>
+            <pre>winget source remove {{ request.get_host }}</pre>
+        {% endif %}
         <p>
             If you have any questions, feel free to contact us at
             <a href="mailto:winget@omaha-consulting.com">winget@omaha-consulting.com</a>.
