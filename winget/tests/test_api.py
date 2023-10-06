@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from winget.models import Package, Version, Installer
 from winget.tests.util import TestCaseThatUploadsFiles, \
-	MultiUploadInMemoryFile, create_tenant
+	MultiUploadInMemoryFile, create_tenant, get_file_contents
 
 import json
 
@@ -167,8 +167,8 @@ class APITest(TestCaseThatUploadsFiles):
 		for key, expected in d.items():
 			actual = getattr(o, key)
 			if isinstance(expected, File):
-				expected = expected.read()
-				actual = actual.read()
+				expected = get_file_contents(expected)
+				actual = get_file_contents(actual)
 			try:
 				actual = actual.pk
 			except AttributeError:

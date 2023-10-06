@@ -38,3 +38,22 @@ def create_tenant(username='user@gmail.com', password=None):
 	tenant = Tenant.objects.create()
 	tenant.users.add(user)
 	return tenant
+
+def get_file_contents(f):
+	if f.closed:
+		f.open()
+		try:
+			return f.read()
+		finally:
+			# Make sure we're not accidentally leaving the file open. This is
+			# especially important on Windows, where open files cannot be
+			# deleted. If we leave them opened, then the test case teardown
+			# logic fails with nasty errors when it tries to delete the test's
+			# temporary files.
+			f.close()
+	else:
+		position_before = f.tell()
+		f.seek(0)
+		result = f.read()
+		f.seek(position_before)
+		return result
