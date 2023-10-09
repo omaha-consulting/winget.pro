@@ -39,9 +39,10 @@ class APITest(TestCaseThatUploadsFiles):
 			version = Version.objects.get(id=response.json()['id'])
 			self._assert_dict_obj_equal(payload, version)
 			return version
-	def test_create_installer(self, use_correct_credentials=True):
+	def test_create_installer(self, use_correct_credentials=True, **kwargs):
 		version = self.test_create_version()
 		payload = dict(_INSTALLER_PAYLOAD)
+		payload.update(kwargs)
 		payload['version'] = version.id
 		response = self._check_unauthorized_and_request(
 			'post', 'installer-list', payload, use_correct_credentials
@@ -161,6 +162,20 @@ class APITest(TestCaseThatUploadsFiles):
 			self.assertTrue(
 				installer.sha256.startswith('d4735e3a'), installer.sha256
 			)
+	def test_installer_switch_silent(self):
+		self.test_create_installer(**{'silent_switch': '/ABC'})
+	def test_installer_switch_silent_progress(self):
+		self.test_create_installer(**{'silent_progress_switch': '/ABC'})
+	def test_installer_switch_interactive(self):
+		self.test_create_installer(**{'interactive_switch': '/ABC'})
+	def test_installer_switch_install_location(self):
+		self.test_create_installer(**{'install_location_switch': '/ABC'})
+	def test_installer_switch_log(self):
+		self.test_create_installer(**{'log_switch': '/ABC'})
+	def test_installer_switch_upgrade(self):
+		self.test_create_installer(**{'upgrade_switch': '/ABC'})
+	def test_installer_switch_custom(self):
+		self.test_create_installer(**{'custom_switch': '/ABCq'})
 	def test_cannot_edit_other_tenants_installers(self):
 		self.test_edit_installer(use_correct_credentials=False)
 	def test_cannot_create_version_for_other_tenants_package(self):

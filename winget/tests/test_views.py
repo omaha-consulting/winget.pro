@@ -109,7 +109,7 @@ class APITest(TestCase):
         })['Data']
         self.assertEqual([], data)
 
-    def _create_vscode(self, scope='machine', is_nested=False):
+    def _create_vscode(self, scope='machine', is_nested=False, **kwargs):
         package = Package.objects.create(
             tenant=self.tenant, identifier='XP9KHM4BK9FZ7Q',
             name='Visual Studio Code',
@@ -126,7 +126,8 @@ class APITest(TestCase):
             sha256='6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb78'
                    '75b4b',
             nested_installer='nested.exe' if is_nested else '',
-            nested_installer_type='exe' if is_nested else None
+            nested_installer_type='exe' if is_nested else None,
+            **kwargs
         )
         return package, version, installer
 
@@ -215,6 +216,39 @@ class APITest(TestCase):
         url = self._reverse('packageManifests', {'identifier': 'nonexistent'})
         response = self.client.get(url)
         self.assertEqual(204, response.status_code)
+
+    def test_installer_switch_silent(self):
+        self._test_installer_switch('silent_switch', 'Silent')
+
+    def test_installer_switch_silent_progress(self):
+        self._test_installer_switch(
+            'silent_progress_switch', 'SilentWithProgress'
+        )
+
+    def test_installer_switch_interactive(self):
+        self._test_installer_switch('interactive_switch', 'Interactive')
+
+    def test_installer_switch_install_location(self):
+        self._test_installer_switch(
+            'install_location_switch', 'InstallLocation'
+        )
+
+    def test_installer_switch_log(self):
+        self._test_installer_switch('log_switch', 'Log')
+
+    def test_installer_switch_upgrade(self):
+        self._test_installer_switch('upgrade_switch', 'Upgrade')
+
+    def test_installer_switch_custom(self):
+        self._test_installer_switch('custom_switch', 'Custom')
+
+    def _test_installer_switch(self, model_field, protocol_field):
+        package, version, installer = self._create_vscode(**{model_field: '/T'})
+        resp = self._get('packageManifests', identifier=package.identifier)
+        self.assertEqual(
+            {protocol_field: '/T'},
+            resp['Data']['Versions'][0]['Installers'][0]['InstallerSwitches']
+        )
 
     def _check_vscode_installer_json(
         self, installer, installer_json, scope=None, is_nested=False

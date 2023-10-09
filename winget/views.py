@@ -107,6 +107,18 @@ def _packageManifests(request, package):
                 if installer.nested_installer_type:
                     installer_json['NestedInstallerType'] = \
                         installer.nested_installer_type
+                switches = {
+                    'Silent': installer.silent_switch,
+                    'SilentWithProgress': installer.silent_progress_switch,
+                    'Interactive': installer.interactive_switch,
+                    'InstallLocation': installer.install_location_switch,
+                    'Log': installer.log_switch,
+                    'Upgrade': installer.upgrade_switch,
+                    'Custom': installer.custom_switch
+                }
+                nonempty_switches = {k: v for k, v in switches.items() if v}
+                if nonempty_switches:
+                    installer_json['InstallerSwitches'] = nonempty_switches
                 installers.append(installer_json)
         version_json = {
             'PackageVersion': version.version,

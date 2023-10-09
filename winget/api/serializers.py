@@ -34,8 +34,11 @@ class InstallerSerializer(ModelSerializer):
     class Meta:
         model = Installer
         fields = (
-            'id', 'version', 'architecture', 'type', 'scope', 'file',
-            'nested_installer', 'nested_installer_type', 'sha256'
+            'id', 'version', 'architecture', 'scope', 'type', 'file',
+            'nested_installer', 'nested_installer_type', 'silent_switch',
+            'silent_progress_switch', 'interactive_switch',
+            'install_location_switch', 'log_switch', 'upgrade_switch',
+            'custom_switch', 'sha256'
         )
         read_only_fields = ['sha256']
 

@@ -11,6 +11,27 @@
     <a href="mailto:winget@omaha-consulting.com">winget@omaha-consulting.com</a>
 {% endblock %}
 
-
 {# Right footer #}
 {% block copyright %}{% endblock %}
+
+{% block extrastyle %}
+<style>
+    /*
+     * The following directives are there to improve the layout of the inline
+     * Installer form on the Version admin page:
+     */
+    .form-horizontal .inline-group .add-row,
+    .form-horizontal .inline-related + .inline-related {
+        margin-top: 11px;
+	}
+    .form-horizontal .inline-related fieldset {
+        margin-top: 30px;
+    }
+    .form-horizontal .inline-related fieldset.with-legend h2.legend {
+        font-size: 12px;
+    }
+    .form-horizontal fieldset.collapse .legend {
+        font-weight: 400;
+    }
+</style>
+{% endblock %}

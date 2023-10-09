@@ -86,6 +86,35 @@ class Installer(Model):
         'portable', blank=True, null=True, help_text=
         "If this is a zip file, what's the type of the nested installer?"
     )
+    silent_switch = CharField(
+        blank=True, max_length=512, help_text=
+        "The installer's command-line argument for silent installation."
+    )
+    silent_progress_switch = CharField(
+        blank=True, max_length=512, help_text=
+        "The installer's command-line argument for non-interactive installation."
+    )
+    interactive_switch = CharField(
+        blank=True, max_length=512, help_text=
+        "The installer's command-line argument for interactive installation."
+    )
+    install_location_switch = CharField(
+        blank=True, max_length=512, help_text=
+        "The installer's command-line argument for a custom installation "
+        "location. Use &lt;INSTALLPATH&gt; as placeholder."
+    )
+    log_switch = CharField(blank=True, max_length=512, help_text=
+        "The installer's command-line argument for a custom log file path. Use "
+        "&lt;LOGPATH&gt; as placeholder."
+    )
+    upgrade_switch = CharField(
+        blank=True, max_length=512, help_text=
+        "The installer's command-line argument when the user chooses an upgrade."
+    )
+    custom_switch = CharField(
+        blank=True, max_length=512,
+        help_text="Custom command-line arguments to pass to the installer."
+    )
     sha256 = CharField(
         max_length=64, validators=[RegexValidator('^[a-fA-F0-9]{64}$')]
     )

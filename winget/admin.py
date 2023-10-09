@@ -30,6 +30,24 @@ class InstallerInline(TenantStackedInline):
     form = InstallerForm
     readonly_fields = ('sha256',)
 
+    fieldsets = [
+        (None, {
+            'fields': ['architecture', 'scope', 'type', 'file']
+        }),
+        ('Installer switches', {
+            'fields': [
+                'silent_switch', 'silent_progress_switch', 'interactive_switch',
+                'install_location_switch', 'log_switch', 'upgrade_switch',
+                'custom_switch'
+            ],
+            'classes': ['collapse']
+        }),
+        ('Options for zip installers', {
+            'fields': ['nested_installer', 'nested_installer_type'],
+            'classes': ['collapse']
+        })
+    ]
+
     def get_extra(self, request, obj: Version = None, **kwargs):
         # Show one empty Installer form when the version does not yet have an
         # associated installer. Otherwise, don't add another Installer form.
