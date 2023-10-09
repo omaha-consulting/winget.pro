@@ -138,7 +138,7 @@ class Installer(Model):
         return ['user', 'machine'] if self.scope == 'both' else [self.scope]
 
     def __str__(self):
-        return self.file.url
+        return self.file.url[self.file.url.rfind('/')+1:]
 
 
 @receiver(pre_save, sender=Installer)
