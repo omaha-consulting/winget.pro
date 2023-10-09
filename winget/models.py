@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.db.models import Model, CharField, DateTimeField, ForeignKey, \
     CASCADE, TextField, FileField, CheckConstraint, Q
@@ -138,7 +139,16 @@ class Installer(Model):
         return ['user', 'machine'] if self.scope == 'both' else [self.scope]
 
     def __str__(self):
-        return self.file.url[self.file.url.rfind('/')+1:]
+        result_parts = []
+        try:
+            result_parts.append(str(self.version))
+        except ObjectDoesNotExist:
+            pass
+        if self.architecture:
+            result_parts.append(self.architecture)
+        if self.scope != 'both':
+            result_parts.append(self.scope)
+        return ' '.join(result_parts)
 
 
 @receiver(pre_save, sender=Installer)
