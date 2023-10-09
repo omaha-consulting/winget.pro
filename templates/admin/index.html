@@ -126,6 +126,11 @@
                 can use:
             </p>
             <pre>winget source remove {{ request.get_host }}</pre>
+            <p>
+                If you are interested in uploading versions programmatically,
+                you can also use the
+                <a href="{% url 'winget:api-root' %}">explorable REST API</a>.
+            </p>
         {% endif %}
         <p>
             If you have any questions, feel free to contact us at
