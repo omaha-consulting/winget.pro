@@ -1,3 +1,6 @@
+# Don't leak our Nginx version to clients:
+server_tokens off;
+
 upstream django {
   # fail_timeout=0 means we always retry an upstream even if it failed
   # to return a good HTTP response (in case the Unicorn master nukes a
