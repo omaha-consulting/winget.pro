@@ -56,7 +56,7 @@
             </ul>
             <p>
                 To set up your repository on a system, use your unique URL
-                <code>{{ request.get_host }}{% url 'winget:index' tenant_uuid=request.user.tenant_set.get.uuid %}</code>:
+                <code>https://{{ request.get_host }}{% url 'winget:index' tenant_uuid=request.user.tenant_set.get.uuid %}</code>:
             </p>
 
             <pre>winget source add -n {{ request.get_host }} -a https://{{ request.get_host }}{% url 'winget:index' tenant_uuid=request.user.tenant_set.get.uuid %} -t "Microsoft.Rest"</pre>
