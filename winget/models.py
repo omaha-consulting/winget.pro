@@ -108,30 +108,29 @@ class Installer(Model):
         ]
 
     @classmethod
-    def validate(cls, data, use_verbose_names=True):
+    def validate(cls, data):
         # If possible, the checks here should be in Meta.constraints too.
         errors = {}
+        def add_error(field, message):
+            field_name = cls._meta.get_field(field).verbose_name.capitalize()
+            errors[field] = field_name + ' ' + message
         if data.get('type') == 'zip':
             if not data.get('nested_installer'):
-                errors['nested_installer'] = \
-                    'nested_installer is required when type is "zip".'
+                add_error('nested_installer', 'is required when type is "zip".')
             if not data.get('nested_installer_type'):
-                errors['nested_installer_type'] = \
-                    'nested_installer_type is required when type is "zip".'
+                add_error(
+                    'nested_installer_type', 'is required when type is "zip".'
+                )
         else:
             if data.get('nested_installer'):
-                errors['nested_installer'] = \
-                    'nested_installer can only be set when type is "zip".'
-            if data.get('nested_installer_type'):
-                errors['nested_installer_type'] = \
-                    'nested_installer_type can only be set when type is "zip".'
-        if use_verbose_names:
-            errors = {
-                field: message.replace(
-                    field, cls._meta.get_field(field).verbose_name.capitalize()
+                add_error(
+                    'nested_installer', 'can only be set when type is "zip".'
                 )
-                for field, message in errors.items()
-            }
+            if data.get('nested_installer_type'):
+                add_error(
+                    'nested_installer_type',
+                    'can only be set when type is "zip".'
+                )
         return errors
 
     @property

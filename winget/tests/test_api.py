@@ -69,31 +69,31 @@ class APITest(TestCaseThatUploadsFiles):
 			self.assertEqual(expected_errors, response.json())
 		check_errors({'nested_installer': 'test.exe'}, {
 			'nested_installer': [
-				'nested_installer can only be set when type is "zip".'
+				'Nested installer can only be set when type is "zip".'
 			]
 		})
 		check_errors({'nested_installer_type': 'inno'}, {
 			'nested_installer_type': [
-				'nested_installer_type can only be set when type is "zip".'
+				'Nested installer type can only be set when type is "zip".'
 			]
 		})
 		payload['type'] = 'zip'
 		check_errors({}, {
 			'nested_installer': [
-				'nested_installer is required when type is "zip".'
+				'Nested installer is required when type is "zip".'
 			],
 			'nested_installer_type': [
-				'nested_installer_type is required when type is "zip".'
+				'Nested installer type is required when type is "zip".'
 			]
 		})
 		check_errors({'nested_installer': 'nested.exe'}, {
 			'nested_installer_type': [
-				'nested_installer_type is required when type is "zip".'
+				'Nested installer type is required when type is "zip".'
 			]
 		})
 		check_errors({'nested_installer_type': 'exe'}, {
 			'nested_installer': [
-				'nested_installer is required when type is "zip".'
+				'Nested installer is required when type is "zip".'
 			]
 		})
 		payload['nested_installer'] = 'nested.msi'

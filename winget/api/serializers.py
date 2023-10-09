@@ -47,7 +47,7 @@ class InstallerSerializer(ModelSerializer):
         return result
 
     def validate(self, attrs):
-        errors = Installer.validate(attrs, use_verbose_names=False)
+        errors = Installer.validate(attrs)
         if errors:
             raise ValidationError(errors)
         return attrs
