@@ -75,6 +75,7 @@ class Installer(Model):
         'msix', 'msi', 'appx', 'exe', 'zip', 'inno', 'nullsoft', 'wix', 'burn',
         'pwa', 'msstore'
     )
+    file = FileField(upload_to=installer_upload_to)
     nested_installer = CharField(
         blank=True, max_length=512, help_text=
         "If this is a zip file, which installer inside it should be run?"
@@ -84,7 +85,6 @@ class Installer(Model):
         'portable', blank=True, null=True, help_text=
         "If this is a zip file, what's the type of the nested installer?"
     )
-    file = FileField(upload_to=installer_upload_to)
     sha256 = CharField(
         max_length=64, validators=[RegexValidator('^[a-fA-F0-9]{64}$')]
     )
