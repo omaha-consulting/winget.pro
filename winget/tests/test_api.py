@@ -142,7 +142,7 @@ class APITest(TestCaseThatUploadsFiles):
 	def test_cannot_create_installer_for_other_tenants_version(self):
 		self.test_create_installer(use_correct_credentials=False)
 	def _check_unauthorized_and_request(
-		self, method, view_name, data, credentials=None, view_kwargs=None
+		self, method, view_name, data, credentials, view_kwargs=None
 	):
 		self._check_unauthorized(method, view_name, data, view_kwargs)
 		return self._request(
