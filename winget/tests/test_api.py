@@ -22,7 +22,7 @@ class APITest(TestCaseThatUploadsFiles):
 			'post', 'package-list', _PACKAGE_PAYLOAD, self.credentials
 		)
 		self.assertEqual(201, response.status_code)
-		package = Package.objects.get()
+		package = Package.objects.get(id=response.json()['id'])
 		self._assert_dict_obj_equal(_PACKAGE_PAYLOAD, package)
 		self.assertEqual(self.tenant, package.tenant)
 		return package
@@ -38,7 +38,7 @@ class APITest(TestCaseThatUploadsFiles):
 		expected_status = 201 if use_correct_credentials else 400
 		self.assertEqual(expected_status, response.status_code)
 		if use_correct_credentials:
-			version = Version.objects.get()
+			version = Version.objects.get(id=response.json()['id'])
 			self._assert_dict_obj_equal(payload, version)
 			return version
 	def test_create_installer(self, use_correct_credentials=True):
@@ -53,7 +53,7 @@ class APITest(TestCaseThatUploadsFiles):
 		expected_status = 201 if use_correct_credentials else 400
 		self.assertEqual(expected_status, response.status_code)
 		if use_correct_credentials:
-			installer = Installer.objects.get()
+			installer = Installer.objects.get(id=response.json()['id'])
 			self._assert_dict_obj_equal(payload, installer)
 			self.assertTrue(installer.sha256.startswith('6b86b273'))
 			return installer
