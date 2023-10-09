@@ -19,7 +19,7 @@ class APITest(TestCaseThatUploadsFiles):
 		create_tenant(*self.other_credentials)
 	def test_create_package(self):
 		response = self._check_unauthorized_and_request(
-			'post', 'package-list', _PACKAGE_PAYLOAD, self.credentials
+			'post', 'package-list', _PACKAGE_PAYLOAD
 		)
 		self.assertEqual(201, response.status_code)
 		package = Package.objects.get(id=response.json()['id'])
@@ -27,13 +27,11 @@ class APITest(TestCaseThatUploadsFiles):
 		self.assertEqual(self.tenant, package.tenant)
 		return package
 	def test_create_version(self, use_correct_credentials=True):
-		credentials = self.credentials if use_correct_credentials \
-			else self.other_credentials
 		package = self.test_create_package()
 		payload = dict(_VERSION_PAYLOAD)
 		payload['package'] = package.id
 		response = self._check_unauthorized_and_request(
-			'post', 'version-list', payload, credentials
+			'post', 'version-list', payload, use_correct_credentials
 		)
 		expected_status = 201 if use_correct_credentials else 400
 		self.assertEqual(expected_status, response.status_code)
@@ -42,13 +40,11 @@ class APITest(TestCaseThatUploadsFiles):
 			self._assert_dict_obj_equal(payload, version)
 			return version
 	def test_create_installer(self, use_correct_credentials=True):
-		credentials = self.credentials if use_correct_credentials \
-			else self.other_credentials
 		version = self.test_create_version()
 		payload = dict(_INSTALLER_PAYLOAD)
 		payload['version'] = version.id
 		response = self._check_unauthorized_and_request(
-			'post', 'installer-list', payload, credentials
+			'post', 'installer-list', payload, use_correct_credentials
 		)
 		expected_status = 201 if use_correct_credentials else 400
 		self.assertEqual(expected_status, response.status_code)
@@ -65,21 +61,18 @@ class APITest(TestCaseThatUploadsFiles):
 		payload['nested_installer'] = 'nested-installer.msi'
 		payload['nested_installer_type'] = 'msi'
 		response = self._check_unauthorized_and_request(
-			'post', 'installer-list', payload, self.credentials
+			'post', 'installer-list', payload
 		)
 		self.assertEqual(201, response.status_code)
 		installer = Installer.objects.get(id=response.json()['id'])
 		self._assert_dict_obj_equal(payload, installer)
 		self.assertTrue(installer.sha256.startswith('6b86b273'))
 	def test_edit_package(self, use_correct_credentials=True):
-		credentials = self.credentials if use_correct_credentials \
-			else self.other_credentials
 		package = self.test_create_package()
 		payload = dict(_PACKAGE_PAYLOAD)
 		payload['name'] = 'new name'
 		response = self._check_unauthorized_and_request(
-			'put', 'package-detail', payload,
-			self.credentials if use_correct_credentials else credentials,
+			'put', 'package-detail', payload, use_correct_credentials,
 			{'pk': package.id}
 		)
 		expected_status = 200 if use_correct_credentials else 404
@@ -92,16 +85,13 @@ class APITest(TestCaseThatUploadsFiles):
 	def test_cannot_edit_other_tenants_packages(self):
 		self.test_edit_package(use_correct_credentials=False)
 	def test_edit_version(self, use_correct_credentials=True):
-		credentials = self.credentials if use_correct_credentials \
-			else self.other_credentials
 		version = self.test_create_version()
 		payload = {
 			'version': '0.0.2',
 			'package': version.package.id
 		}
 		response = self._check_unauthorized_and_request(
-			'put', 'version-detail', payload,
-			self.credentials if use_correct_credentials else credentials,
+			'put', 'version-detail', payload, use_correct_credentials,
 			{'pk': version.id}
 		)
 		expected_status = 200 if use_correct_credentials else 404
@@ -114,15 +104,12 @@ class APITest(TestCaseThatUploadsFiles):
 	def test_cannot_edit_other_tenants_versions(self):
 		self.test_edit_version(use_correct_credentials=False)
 	def test_edit_installer(self, use_correct_credentials=True):
-		credentials = self.credentials if use_correct_credentials \
-			else self.other_credentials
 		installer = self.test_create_installer()
 		payload = dict(_INSTALLER_PAYLOAD)
 		payload['version'] = installer.version.id
 		payload['file'] = MultiUploadInMemoryFile('file2.exe', b'2')
 		response = self._check_unauthorized_and_request(
-			'put', 'installer-detail', payload,
-			self.credentials if use_correct_credentials else credentials,
+			'put', 'installer-detail', payload, use_correct_credentials,
 			{'pk': installer.id}
 		)
 		expected_status = 200 if use_correct_credentials else 404
@@ -142,9 +129,12 @@ class APITest(TestCaseThatUploadsFiles):
 	def test_cannot_create_installer_for_other_tenants_version(self):
 		self.test_create_installer(use_correct_credentials=False)
 	def _check_unauthorized_and_request(
-		self, method, view_name, data, credentials, view_kwargs=None
+		self, method, view_name, data, use_correct_credentials=True,
+		view_kwargs=None
 	):
 		self._check_unauthorized(method, view_name, data, view_kwargs)
+		credentials = self.credentials if use_correct_credentials \
+			else self.other_credentials
 		return self._request(
 			method, view_name, data, credentials, view_kwargs
 		)
