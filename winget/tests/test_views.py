@@ -16,7 +16,7 @@ class APITest(TestCase):
     def test_information_required_parts(self):
         data = self._get('information')['Data']
         self.assertEqual('api.winget.pro', data['SourceIdentifier'])
-        self.assertEqual(['1.1.0'], data['ServerSupportedVersions'])
+        self.assertEqual(['1.4.0', '1.5.0'], data['ServerSupportedVersions'])
 
     def test_search_all_empty(self):
         # Simulate `winget search` without any extra parameters.
@@ -109,7 +109,7 @@ class APITest(TestCase):
         })['Data']
         self.assertEqual([], data)
 
-    def _create_vscode(self, scope='machine'):
+    def _create_vscode(self, scope='machine', is_nested=False):
         package = Package.objects.create(
             tenant=self.tenant, identifier='XP9KHM4BK9FZ7Q',
             name='Visual Studio Code',
@@ -118,10 +118,15 @@ class APITest(TestCase):
         )
         version = Version.objects.create(version='Unknown', package=package)
         installer = Installer.objects.create(
-            version=version, architecture='x64', type='exe', scope=scope,
-            file=SimpleUploadedFile('vscode-winsta11er-x64.exe', b'1'),
+            version=version, architecture='x64', scope=scope,
+            type='zip' if is_nested else 'exe',
+            file=SimpleUploadedFile(
+                'vscode-winsta11er-x64.' + 'zip' if is_nested else 'exe', b'1'
+            ),
             sha256='6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb78'
-                   '75b4b'
+                   '75b4b',
+            nested_installer='nested.exe' if is_nested else '',
+            nested_installer_type='exe' if is_nested else None
         )
         return package, version, installer
 
@@ -212,7 +217,7 @@ class APITest(TestCase):
         self.assertEqual(204, response.status_code)
 
     def _check_vscode_installer_json(
-        self, installer, installer_json, scope=None
+        self, installer, installer_json, scope=None, is_nested=False
     ):
         if scope is None:
             scope = installer.scope
@@ -224,6 +229,21 @@ class APITest(TestCase):
         )
         self.assertEqual(installer.sha256, installer_json['InstallerSha256'])
         self.assertEqual(scope, installer_json['Scope'])
+        expected_nested_files = []
+        if is_nested:
+            expected_nested_files.append(
+                {'RelativeFilePath': installer.nested_installer}
+            )
+        self.assertEqual(
+            # We use .get(...) because the field may be omitted.
+            installer_json.get('NestedInstallerFiles', []),
+            expected_nested_files
+        )
+        self.assertEqual(
+            installer.nested_installer_type,
+            # We use .get(...) because the field may be omitted.
+            installer_json.get('NestedInstallerType')
+        )
 
     def test_scope_both(self):
         package, version, installer = self._create_vscode(scope='both')
@@ -234,6 +254,15 @@ class APITest(TestCase):
         machine, user = sorted(installers_json, key=lambda i: i['Scope'])
         self._check_vscode_installer_json(installer, machine, 'machine')
         self._check_vscode_installer_json(installer, user, 'user')
+
+    def test_nested_installer(self):
+        package, version, installer = self._create_vscode(is_nested=True)
+        resp = self._get('packageManifests', identifier=package.identifier)
+        version_json, = resp['Data']['Versions']
+        installer_json, = version_json['Installers']
+        self._check_vscode_installer_json(
+            installer, installer_json, is_nested=True
+        )
 
     def _get(self, url_name, expect_status=200, **kwargs):
         response = self.client.get(self._reverse(url_name, kwargs))

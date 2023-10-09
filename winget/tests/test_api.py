@@ -57,6 +57,20 @@ class APITest(TestCaseThatUploadsFiles):
 			self._assert_dict_obj_equal(payload, installer)
 			self.assertTrue(installer.sha256.startswith('6b86b273'))
 			return installer
+	def test_create_nested_installer(self):
+		version = self.test_create_version()
+		payload = dict(_INSTALLER_PAYLOAD)
+		payload['version'] = version.id
+		payload['type'] = 'zip'
+		payload['nested_installer'] = 'nested-installer.msi'
+		payload['nested_installer_type'] = 'msi'
+		response = self._check_unauthorized_and_request(
+			'post', 'installer-list', payload, self.credentials
+		)
+		self.assertEqual(201, response.status_code)
+		installer = Installer.objects.get(id=response.json()['id'])
+		self._assert_dict_obj_equal(payload, installer)
+		self.assertTrue(installer.sha256.startswith('6b86b273'))
 	def test_edit_package(self, use_correct_credentials=True):
 		credentials = self.credentials if use_correct_credentials \
 			else self.other_credentials

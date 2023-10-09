@@ -1,6 +1,6 @@
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.db.models import Model, CharField, DateTimeField, ForeignKey, \
-    CASCADE, TextField, FileField
+    CASCADE, TextField, FileField, CheckConstraint, Q
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from hashlib import sha256
@@ -66,14 +66,23 @@ def installer_upload_to(instance, filename):
 class Installer(Model):
     version = ForeignKey(Version, on_delete=CASCADE)
     architecture = CharFieldFromChoices('x86', 'x64', 'arm', 'arm64')
-    type = CharFieldFromChoices(
-        'msix', 'msi', 'appx', 'exe', 'zip', 'inno', 'nullsoft', 'wix', 'burn',
-        'pwa', 'msstore'
-    )
     scope = CharFieldFromChoices(
         'user', 'machine', 'both', default='both',
         help_text=
         "Is this a machine-wide installer, just for the current user, or both?"
+    )
+    type = CharFieldFromChoices(
+        'msix', 'msi', 'appx', 'exe', 'zip', 'inno', 'nullsoft', 'wix', 'burn',
+        'pwa', 'msstore'
+    )
+    nested_installer = CharField(
+        blank=True, max_length=512, help_text=
+        "If this is a zip file, which installer inside it should be run?"
+    )
+    nested_installer_type = CharFieldFromChoices(
+        'msix', 'msi', 'appx', 'exe', 'inno', 'nullsoft', 'wix', 'burn',
+        'portable', blank=True, null=True, help_text=
+        "If this is a zip file, what's the type of the nested installer?"
     )
     file = FileField(upload_to=installer_upload_to)
     sha256 = CharField(
@@ -84,6 +93,46 @@ class Installer(Model):
 
     class Meta:
         unique_together = ('version', 'architecture', 'type')
+        # N.B.: The constraints here need to be checked in .validate(...) too.
+        constraints = [
+            CheckConstraint(
+                check=(Q(type='zip') & ~Q(nested_installer='')) | \
+                      (~Q(type='zip') & Q(nested_installer='')),
+                name='nested_installer_iff_zip'
+            ),
+            CheckConstraint(
+                check=(Q(type='zip') & ~Q(nested_installer_type=None)) | \
+                      (~Q(type='zip') & Q(nested_installer_type=None)),
+                name='nested_installer_type_iff_zip'
+            ),
+        ]
+
+    @classmethod
+    def validate(cls, data, use_verbose_names=True):
+        # If possible, the checks here should be in Meta.constraints too.
+        errors = {}
+        if data.get('type') == 'zip':
+            if not data.get('nested_installer'):
+                errors['nested_installer'] = \
+                    'nested_installer is required when type is "zip".'
+            if not data.get('nested_installer_type'):
+                errors['nested_installer_type'] = \
+                    'nested_installer_type is required when type is "zip".'
+        else:
+            if data.get('nested_installer'):
+                errors['nested_installer'] = \
+                    'nested_installer can only be set when type is "zip".'
+            if data.get('nested_installer_type'):
+                errors['nested_installer_type'] = \
+                    'nested_installer_type can only be set when type is "zip".'
+        if use_verbose_names:
+            errors = {
+                field: message.replace(
+                    field, cls._meta.get_field(field).verbose_name.capitalize()
+                )
+                for field, message in errors.items()
+            }
+        return errors
 
     @property
     def scopes(self):

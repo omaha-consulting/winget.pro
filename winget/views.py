@@ -20,7 +20,7 @@ def index(*_):
 def information(*_):
     return {
         'SourceIdentifier': 'api.winget.pro',
-        'ServerSupportedVersions': ['1.1.0']
+        'ServerSupportedVersions': ['1.4.0', '1.5.0']
     }
 
 @require_POST
@@ -83,30 +83,40 @@ def packageManifests(request, tenant, identifier):
 
 @return_jsonresponse
 def _packageManifests(request, package):
-    return {
-        'PackageIdentifier': package.identifier,
-        'Versions': [
-            {
-                'PackageVersion': version.version,
-                'DefaultLocale': {
-                    'PackageLocale': 'en-us',
-                    'Publisher': package.publisher,
-                    'PackageName': package.name,
-                    'ShortDescription': package.description
-                },
-                'Installers': [
-                    {
-                        'Architecture': installer.architecture,
-                        'InstallerType': installer.type,
-                        'InstallerUrl':
-                            request.build_absolute_uri(installer.file.url),
-                        'InstallerSha256': installer.sha256,
-                        'Scope': scope
-                    }
-                    for installer in version.installer_set.all()
-                    for scope in installer.scopes
-                ]
-            }
-            for version in package.version_set.all()
-        ]
+    result = {
+        'PackageIdentifier': package.identifier
     }
+    for version in package.version_set.all():
+        installers = []
+        for installer in version.installer_set.all():
+            for scope in installer.scopes:
+                installer_json = {
+                    'Architecture': installer.architecture,
+                    'InstallerType': installer.type,
+                    'InstallerUrl':
+                        request.build_absolute_uri(installer.file.url),
+                    'InstallerSha256': installer.sha256,
+                    'Scope': scope
+                }
+                if installer.nested_installer:
+                    # NestedInstallerFiles needs to be a list even though at
+                    # least winget 1.6.2771 does not support more than one.
+                    installer_json['NestedInstallerFiles'] = [{
+                        'RelativeFilePath': installer.nested_installer
+                    }]
+                if installer.nested_installer_type:
+                    installer_json['NestedInstallerType'] = \
+                        installer.nested_installer_type
+                installers.append(installer_json)
+        version_json = {
+            'PackageVersion': version.version,
+            'DefaultLocale': {
+                'PackageLocale': 'en-us',
+                'Publisher': package.publisher,
+                'PackageName': package.name,
+                'ShortDescription': package.description
+            },
+            'Installers': installers
+        }
+        result.setdefault('Versions', []).append(version_json)
+    return result

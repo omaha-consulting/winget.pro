@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 from winget.authorization import get_package_queryset, get_version_queryset
 from winget.models import Package, Version, Installer
@@ -32,8 +33,10 @@ class InstallerSerializer(ModelSerializer):
 
     class Meta:
         model = Installer
-        fields = \
-	        ('id', 'version', 'architecture', 'type', 'scope', 'file', 'sha256')
+        fields = (
+            'id', 'version', 'architecture', 'type', 'scope', 'file',
+            'nested_installer', 'nested_installer_type', 'sha256'
+        )
         read_only_fields = ['sha256']
 
     def get_extra_kwargs(self):
@@ -42,3 +45,9 @@ class InstallerSerializer(ModelSerializer):
             'queryset': get_version_queryset(self.context['request'])
         }
         return result
+
+    def validate(self, attrs):
+        errors = Installer.validate(attrs, use_verbose_names=False)
+        if errors:
+            raise ValidationError(list(errors.values()))
+        return attrs

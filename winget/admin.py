@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import RelatedOnlyFieldListFilter
+from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from tenants.model_admin import TenantModelAdmin, TenantStackedInline
 from winget.models import Package, Version, Installer
@@ -14,6 +15,14 @@ class InstallerForm(ModelForm):
     class Meta:
         model = Installer
         fields = '__all__'
+
+
+    def clean(self):
+        data = super().clean()
+        errors = Installer.validate(data)
+        if errors:
+            raise ValidationError(errors)
+        return data
 
 
 class InstallerInline(TenantStackedInline):
