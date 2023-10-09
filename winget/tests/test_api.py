@@ -57,12 +57,51 @@ class APITest(TestCaseThatUploadsFiles):
 		version = self.test_create_version()
 		payload = dict(_INSTALLER_PAYLOAD)
 		payload['version'] = version.id
+		def send_payload(modifications=None):
+			modified_payload = dict(payload)
+			modified_payload.update(modifications or {})
+			return self._check_unauthorized_and_request(
+				'post', 'installer-list', modified_payload
+			)
+		def check_errors(payload_modifications, expected_errors):
+			response = send_payload(payload_modifications)
+			self.assertEqual(400, response.status_code)
+			self.assertEqual(expected_errors, response.json())
+		check_errors({'nested_installer': 'test.exe'}, {
+			'nested_installer': [
+				'nested_installer can only be set when type is "zip".'
+			]
+		})
+		check_errors({'nested_installer_type': 'inno'}, {
+			'nested_installer_type': [
+				'nested_installer_type can only be set when type is "zip".'
+			]
+		})
 		payload['type'] = 'zip'
-		payload['nested_installer'] = 'nested-installer.msi'
+		check_errors({}, {
+			'nested_installer': [
+				'nested_installer is required when type is "zip".'
+			],
+			'nested_installer_type': [
+				'nested_installer_type is required when type is "zip".'
+			]
+		})
+		check_errors({'nested_installer': 'nested.exe'}, {
+			'nested_installer_type': [
+				'nested_installer_type is required when type is "zip".'
+			]
+		})
+		check_errors({'nested_installer_type': 'exe'}, {
+			'nested_installer': [
+				'nested_installer is required when type is "zip".'
+			]
+		})
+		payload['nested_installer'] = 'nested.msi'
+		check_errors({'nested_installer_type': 'WRONG'}, {
+			'nested_installer_type': ['"WRONG" is not a valid choice.']
+		})
 		payload['nested_installer_type'] = 'msi'
-		response = self._check_unauthorized_and_request(
-			'post', 'installer-list', payload
-		)
+		response = send_payload()
 		self.assertEqual(201, response.status_code)
 		installer = Installer.objects.get(id=response.json()['id'])
 		self._assert_dict_obj_equal(payload, installer)
