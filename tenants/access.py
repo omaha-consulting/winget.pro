@@ -1,19 +1,15 @@
 from django.core.exceptions import FieldDoesNotExist
 
-
 def can_pick_tenant(user):
     return user.is_superuser
-
 
 def filter_for_user(model, user):
     tenant_accessor = get_tenant_accessor(model)
     query = {tenant_accessor + '__users': user}
     return model.objects.filter(**query)
 
-
 def get_tenant_accessor(model):
     return _get_tenant_accessor(model, set())
-
 
 def _get_tenant_accessor(model, visited):
     visited.add(model)
