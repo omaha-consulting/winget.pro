@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.contrib.admin import ModelAdmin, StackedInline
 from tenants.access import can_pick_tenant, filter_for_user, get_tenant_accessor
 from tenants.forms import TenantModelForm
@@ -37,7 +38,17 @@ class TenantModelAdmin(GetQuerySetMixin, ModelAdmin):
             tenant_accessor = get_tenant_accessor(self.model)
             # Django doesn't support transitive relations in list_display:
             if '__' not in tenant_accessor:
-                result = [tenant_accessor] + result
+                field = self.model._meta.get_field('tenant')
+                if field.many_to_many:
+                    @admin.display(description='tenant')
+                    def get_tenant(obj):
+                        accessor_name = field.get_accessor_name()
+                        return ', '.join(
+                            str(t) for t in getattr(obj, accessor_name).all()
+                        )
+                    result = [get_tenant] + result
+                else:
+                    result = [tenant_accessor] + result
         return result
 
     def get_list_display_links(self, request, list_display):

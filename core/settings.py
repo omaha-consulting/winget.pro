@@ -147,7 +147,7 @@ SUIT_CONFIG = {
     'ADMIN_NAME': 'winget.Pro Admin',
     'MENU': (
         {'app': 'winget', 'icon': 'icon-refresh'},
-        {'label': 'Users', 'icon': 'icon-user', 'permissions': 'auth.add_user',
+        {'label': 'Users', 'icon': 'icon-user', 'permissions': 'auth.view_user',
          'models': ('auth.user', 'tenants.tenant')}
     ),
     'CONFIRM_UNSAVED_CHANGES': False
