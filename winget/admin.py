@@ -5,17 +5,15 @@ from django.forms import ModelForm
 from tenants.model_admin import TenantModelAdmin, TenantStackedInline
 from winget.models import Package, Version, Installer
 
-
 class PackageAdmin(TenantModelAdmin):
     list_display = ('name', 'publisher', 'identifier')
     list_filter = ('publisher',)
 
-
 class InstallerForm(ModelForm):
+
     class Meta:
         model = Installer
         fields = '__all__'
-
 
     def clean(self):
         data = super().clean()
@@ -24,8 +22,8 @@ class InstallerForm(ModelForm):
             raise ValidationError(errors)
         return data
 
-
 class InstallerInline(TenantStackedInline):
+
     model = Installer
     form = InstallerForm
     readonly_fields = ('sha256',)
@@ -55,14 +53,11 @@ class InstallerInline(TenantStackedInline):
             return 0
         return 1
 
-
 class VersionAdmin(TenantModelAdmin):
-
     inlines = (InstallerInline,)
     list_display = ('created', 'modified', 'package', 'version')
     list_display_links = ('created', 'modified', 'version', 'package')
     list_filter = (('package', RelatedOnlyFieldListFilter),)
-
 
 admin.site.register(Package, PackageAdmin)
 admin.site.register(Version, VersionAdmin)
