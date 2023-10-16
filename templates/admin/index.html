@@ -4,37 +4,7 @@
 {% block content %}
     <div id="content-main">
         <h1>Welcome!</h1>
-        {% if not request.user.tenant_set.get.uuid and request.user.is_superuser %}
-            <p>
-                It seems that you are a superuser but do not have a
-                <em>tenant</em> associated with your account. You should
-                probably create a non-superuser with an associated tenant.
-                Alternatively, you can also create and associate a tenant with
-                your superuser account.
-            </p>
-            <p>
-                To create a non-superuser, click
-                <a href="{% url 'admin:auth_user_add' %}">here</a>. Once you
-                have created the user, enable their <em>Staff status</em>.
-                Then create a new group called <em>Tenants</em>. Give it all
-                permissions that are prefixed with <code>winget</code>. Make
-                sure to finally <em>Save</em> your changes to the user account.
-                Now the user can log in.
-            </p>
-            <p>
-                This server can host multiple repositories. Every repository is
-                associated with a <em>tenant</em>. The user we created (or your
-                superuser account) still needs to be associated with a tenant to
-                be able to upload versions.
-            </p>
-            <p>
-                To create a tenant, click
-                <a href="{% url 'admin:tenants_tenant_add' %}">here</a>.
-                Select the appropriate user. Once you have done this, they can
-                upload packages. When they log in, they will also see their
-                private repository URL.
-            </p>
-        {% else %}
+        {% if request.user.tenant_set.get.uuid %}
             <p>
                 Use the
                 <a href="{% url 'admin:winget_package_changelist' %}">Winget</a>
@@ -130,6 +100,41 @@
                 If you are interested in uploading versions programmatically,
                 you can also use the
                 <a href="{% url 'winget:api-root' %}">explorable REST API</a>.
+            </p>
+        {% elif request.user.is_superuser %}
+            <p>
+                It seems that you are a superuser but do not have a
+                <em>tenant</em> associated with your account. You should
+                probably create a non-superuser with an associated tenant.
+                Alternatively, you can also create and associate a tenant with
+                your superuser account.
+            </p>
+            <p>
+                To create a non-superuser, click
+                <a href="{% url 'admin:auth_user_add' %}">here</a>. Once you
+                have created the user, enable their <em>Staff status</em>.
+                Then create a new group called <em>Tenants</em>. Give it all
+                permissions that are prefixed with <code>winget</code>. Make
+                sure to finally <em>Save</em> your changes to the user account.
+                Now the user can log in.
+            </p>
+            <p>
+                This server can host multiple repositories. Every repository is
+                associated with a <em>tenant</em>. The user we created (or your
+                superuser account) still needs to be associated with a tenant to
+                be able to upload versions.
+            </p>
+            <p>
+                To create a tenant, click
+                <a href="{% url 'admin:tenants_tenant_add' %}">here</a>.
+                Select the appropriate user. Once you have done this, they can
+                upload packages. When they log in, they will also see their
+                private repository URL.
+            </p>
+        {% else %}
+            <p>
+                It seems that something went wrong. You are not a superuser and
+                there is no tenant associated with your account.
             </p>
         {% endif %}
         <p>
