@@ -17,6 +17,6 @@ RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-RUN chmod +x /srv/deploy/docker/start.sh
+RUN chmod +x /srv/run/docker/start.sh
 
-CMD ["/srv/deploy/docker/start.sh"]
+CMD ["/srv/run/docker/start.sh"]

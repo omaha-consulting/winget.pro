@@ -4,7 +4,7 @@ services:
   django:
     build:
       context: ../..
-      dockerfile: deploy/docker/Dockerfile
+      dockerfile: run/docker/Dockerfile
     volumes:
       - static:/srv/static
       - media:/srv/media

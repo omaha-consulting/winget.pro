@@ -4,7 +4,7 @@ A private winget repository server written in Python. For an overview of the
 project and its features, please see https://winget.pro.
 
 If you are here, then you probably want to run winget.pro yourself. Please see
-the [`deploy/`](deploy) directory for instructions.
+the [`run/`](run) directory for instructions.
 
 Do you need help or did you encounter an issue? Please
 [file an issue](https://github.com/omaha-consulting/winget.pro/issues). We will
