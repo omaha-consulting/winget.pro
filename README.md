@@ -73,6 +73,9 @@ Upload [`install.sh`](install.sh) and a `.bashrc` file with the settings below
 to a Debian 11 server, then run `install.sh` as root.
 
 ```bash
+# Set DEBUG to False in production:
+export DEBUG=False
+
 # The domain under which this server runs:
 export HOST_NAME=some.domain.com
 
