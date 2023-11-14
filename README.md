@@ -69,7 +69,7 @@ to `1`.
 
 ## Deploying
 
-Upload [`install.sh`](install.sh) and a `.bashrc` file with the settings below
+Upload [`install.sh`](deploy/vps/install.sh) and a `.bashrc` file with the settings below
 to a Debian 11 server, then run `install.sh` as root.
 
 ```bash

@@ -22,7 +22,7 @@ cd "$PROJECT_DIR"
 source venv/bin/activate
 
 alias shell='python manage.py shell'
-alias release="ssh root@api.winget.pro '/srv/bin/git-update.sh'"
+alias release="ssh root@api.winget.pro '/srv/deploy/vps/bin/git-update.sh'"
 alias migrate="python manage.py migrate"
 alias makemigrations="python manage.py makemigrations"
 alias tests='python manage.py test'

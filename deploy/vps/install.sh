@@ -61,7 +61,7 @@ then
   log 'Cloning the repository...'
   git clone -q -b ${GIT_REPO_BRANCH} git@${GIT_SERVER}:${GIT_REPO_NAME}.git /srv
 else
-  if [ ! -d /srv/conf ]
+  if [ ! -d /srv/deploy ]
   then
     log 'Error: Please place the server source code into /srv.'
     exit 1
@@ -78,12 +78,12 @@ then
   log 'Configuring Postfix...'
   echo "$HOST_NAME" > /etc/mailname
   chown postfix /etc/mailname
-  envsubst '$SMTP_HOST $HOST_NAME' < /srv/conf/postfix/main.cf > /etc/postfix/main.cf
-  envsubst < /srv/conf/postfix/sasl_passwd > /etc/postfix/sasl_passwd
+  envsubst '$SMTP_HOST $HOST_NAME' < /srv/deploy/vps/conf/postfix/main.cf > /etc/postfix/main.cf
+  envsubst < /srv/deploy/vps/conf/postfix/sasl_passwd > /etc/postfix/sasl_passwd
   postmap /etc/postfix/sasl_passwd
   chmod 400 /etc/postfix/sasl_passwd
   chown postfix /etc/postfix/sasl_passwd
-  envsubst < /srv/conf/postfix/generic > /etc/postfix/generic
+  envsubst < /srv/deploy/vps/conf/postfix/generic > /etc/postfix/generic
   postmap /etc/postfix/generic
   chown postfix /etc/postfix/generic
   /etc/init.d/postfix reload > /dev/null
@@ -111,9 +111,9 @@ chown django /home/django
 chmod 700 /home/django
 
 log 'Setting up bash profiles...'
-ln -sf /srv/conf/.bash_profile .
-ln -sf /srv/conf/.bash_profile /home/django
-PATH='$PATH' /usr/bin/envsubst < /srv/conf/django.bashrc > /home/django/.bashrc
+ln -sf /srv/deploy/vps/conf/.bash_profile .
+ln -sf /srv/deploy/vps/conf/.bash_profile /home/django
+PATH='$PATH' /usr/bin/envsubst < /srv/deploy/vps/conf/django.bashrc > /home/django/.bashrc
 chown django:django /home/django/.bashrc
 
 log 'Creating data directory...'
@@ -142,19 +142,19 @@ log 'Installing Python dependencies...'
 /srv/venv/bin/pip install -Ur /srv/requirements/base-full.txt > /dev/null
 
 log 'Migrating database...'
-su -c '/srv/bin/manage.sh migrate | grep -v "INFO\|DEBUG"' - django
+su -c '/srv/deploy/vps/bin/manage.sh migrate | grep -v "INFO\|DEBUG"' - django
 
 log 'Collecting static files...'
-su -c '/srv/bin/manage.sh collectstatic --noinput | grep -v "INFO\|DEBUG"' - django
+su -c '/srv/deploy/vps/bin/manage.sh collectstatic --noinput | grep -v "INFO\|DEBUG"' - django
 
 log 'Initializing run/ directory...'
-/srv/bin/init-run-dir.sh
+/srv/deploy/vps/bin/init-run-dir.sh
 
 log 'Installing Supervisor...'
 apt-get install supervisor -y > /dev/null
 
 log 'Configuring Supervisor...'
-ln -s /srv/conf/gunicorn.conf /etc/supervisor/conf.d
+ln -s /srv/deploy/vps/conf/gunicorn.conf /etc/supervisor/conf.d
 
 log 'Starting services...'
 supervisorctl reread > /dev/null
@@ -167,11 +167,11 @@ log 'Creating Nginx includes directory...'
 mkdir /etc/nginx/includes
 
 log 'Creating Nginx config...'
-envsubst < /srv/conf/nginx/server-name > /etc/nginx/includes/server-name
+envsubst < /srv/deploy/vps/conf/nginx/server-name > /etc/nginx/includes/server-name
 touch /etc/nginx/includes/ssl
 
 log 'Applying Nginx config...'
-ln -s /srv/conf/nginx/nginx /etc/nginx/sites-available/django
+ln -s /srv/deploy/vps/conf/nginx/nginx /etc/nginx/sites-available/django
 ln -s /etc/nginx/sites-available/django /etc/nginx/sites-enabled/django
 rm /etc/nginx/sites-enabled/default
 
@@ -197,7 +197,7 @@ else
 fi
 
 log 'Applying SSL config...'
-ln -sf /srv/conf/nginx/ssl /etc/nginx/includes/ssl
+ln -sf /srv/deploy/vps/conf/nginx/ssl /etc/nginx/includes/ssl
 service nginx restart
 
 log "The server is now serving requests at $HOST_NAME$ALT_HOST_NAMES!"
@@ -205,15 +205,15 @@ log "The server is now serving requests at $HOST_NAME$ALT_HOST_NAMES!"
 # Now do less important things that are not required for serving requests:
 
 log 'Setting up logrotate...'
-ln -s /srv/conf/logrotate /etc/logrotate.d/django
+ln -s /srv/deploy/vps/conf/logrotate /etc/logrotate.d/django
 
 log 'Setting up crontab...'
-ln -s /srv/bin/cronic /usr/bin/cronic
+ln -s /srv/deploy/vps/bin/cronic /usr/bin/cronic
 if [[ -n "$ADMIN_EMAIL" ]]
 then
-  sed "s/\$ADMIN_EMAIL/$ADMIN_EMAIL/g" /srv/conf/crontab > crontab
+  sed "s/\$ADMIN_EMAIL/$ADMIN_EMAIL/g" /srv/deploy/vps/conf/crontab > crontab
 else
-  cp /srv/conf/crontab crontab
+  cp /srv/deploy/vps/conf/crontab crontab
 fi
 if [[ -z "$SSL_CERTIFICATE" ]]
 then

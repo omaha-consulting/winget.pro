@@ -1,4 +1,4 @@
 MAILTO=$ADMIN_EMAIL
-@reboot /srv/bin/init-run-dir.sh
+@reboot /srv/deploy/vps/bin/init-run-dir.sh
 # Enabled by install.sh when SSL certificates are managed by certbot:
 #26 2 */7 * * cronic certbot renew
