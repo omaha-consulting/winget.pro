@@ -9,14 +9,14 @@ A Python implementation of a private winget repository server (/REST API).
 `winget` only allows `https://` sources. This means that if we want to run
 locally, then we need a self-signed SSL certificate for `localhost`.
 
-[`localhost.pfx`](conf/localhost.pfx) can be used for this purpose. It was
+[`localhost.pfx`](sslproxy/localhost.pfx) can be used for this purpose. It was
 created from [these instructions](https://gist.github.com/alicoskun/57acda07d5ab672a3c820da57b9531e3).
 To install it, issue the following in a Powershell Admin prompt:
 
 ```bash
 $password=ConvertTo-SecureString "12345" -asplaintext -force
-Import-PfxCertificate -FilePath conf\localhost.pfx Cert:\LocalMachine\My -Password $password -Exportable
-Import-Certificate -FilePath conf\localhost.cert -CertStoreLocation Cert:\CurrentUser\Root
+Import-PfxCertificate -FilePath localhost.pfx Cert:\LocalMachine\My -Password $password -Exportable
+Import-Certificate -FilePath localhost.cert -CertStoreLocation Cert:\CurrentUser\Root
 ```
 
 To remove it later, run `mmc`, click `File/Add or Remove Snap-in` then
@@ -42,7 +42,7 @@ and `Local Computer/Personal`.
 
 Then:
 
-    python sslproxy.py
+    python sslproxy/sslproxy.py
 
 Then you can add the REST source (note the `httpS`):
 
