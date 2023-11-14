@@ -1,138 +1,15 @@
 [![winget.pro logo](https://github.com/omaha-consulting/winget.pro/assets/1076393/03a7a228-da4b-4dce-ac7a-c55e595a327d)](https://winget.pro)
 
-A private winget repository server written in Python. For an overview of the project and the features of the implementation, please see https://winget.pro.
+A private winget repository server written in Python. For an overview of the
+project and its features, please see https://winget.pro.
 
-## Running locallly
+If you are here, then you probably want to run winget.pro yourself. At the
+moment, you can do this locally, on a Linux VPS or via Docker. Please see the
+[`deploy/`](deploy) directory for further instructions.
 
-### Install a local SSL certificate
+Do you need help or did you encounter an issue? Please
+[file an issue](https://github.com/omaha-consulting/winget.pro/issues). We will
+do our best to help you. Feature and pull requests are also welcome!
 
-`winget` only allows `https://` sources. This means that if we want to run
-locally, then we need a self-signed SSL certificate for `localhost`.
-
-[`localhost.pfx`](sslproxy/localhost.pfx) can be used for this purpose. It was
-created from [these instructions](https://gist.github.com/alicoskun/57acda07d5ab672a3c820da57b9531e3).
-To install it, issue the following in a Powershell Admin prompt:
-
-```bash
-$password=ConvertTo-SecureString "12345" -asplaintext -force
-Import-PfxCertificate -FilePath localhost.pfx Cert:\LocalMachine\My -Password $password -Exportable
-Import-Certificate -FilePath localhost.cert -CertStoreLocation Cert:\CurrentUser\Root
-```
-
-To remove it later, run `mmc`, click `File/Add or Remove Snap-in` then
-`Certificates/Add/My User account` then `Finish` and again for
-`Computer account`. Then click `OK`. Then delete `localhost` expiring 2041 from
-`Current User/Personal`, `Current User/Trusted Root Certification Authorities`,
-and `Local Computer/Personal`.
-
-### Set up the development environment
-
-    pip install -Ur requirements/base-full.txt
-
-### Initialise the database
-
-1. Run `python manage.py migrate`
-2. Run `python manage.py createsuperuser`
-3. Run `python manage.py runserver`
-4. Log into `/admin` and create a _Tenant_.
-
-### Run locally
-
-    python manage.py runserver
-
-Then:
-
-    python sslproxy/sslproxy.py
-
-Then you can add the REST source (note the `httpS`):
-
-    winget source add -n dev -a https://localhost:8443/ab... -t "Microsoft.Rest"
-
-Here, `ab...` is the UUID of the Tenant.
-
-Then you can perform queries against the new source. Eg.:
-
-    winget search "search term" -s dev
-
-## Sniffing Microsoft's implementation
-
-Microsoft's implementation is the `msstore` source shown in
-`winget source list`. Typically, it runs under:
-
-    https://storeedgefd.dsx.mp.microsoft.com/v9.0
-
-To sniff it, the easiest way is to use a network inspection tool such as Fiddler
-Classic. This however uses its own SSL certificate, which `winget` rejects. To
-work around this, set the REG_DWORD registry value
-`HKLM\SOFTWARE\Policies\Microsoft\Windows\AppInstaller\EnableBypassCertificatePinningForMicrosoftStore`
-to `1`.
-
-## Deploying
-
-Upload [`install.sh`](deploy/vps/install.sh) and a `.bashrc` file with the settings below
-to a Debian 11 server, then run `install.sh` as root.
-
-```bash
-# Set DEBUG to False in production:
-export DEBUG=False
-
-# The domain under which this server runs:
-export HOST_NAME=some.domain.com
-
-# A space-separated list of alternative host names:
-export ALT_HOST_NAMES=
-
-export DJANGO_SECRET_KEY=atLeast50RandomChars
-
-##### Optional settings for checking out the server source code with git #######
-
-# The server that hosts this repository:
-export GIT_SERVER=github.com
-# The path on GIT_SERVER where this repository lies:
-export GIT_REPO_NAME=omaha-consulting/winget.pro
-# The branch of this repository that should be checked out:
-export GIT_REPO_BRANCH=main
-# The SSH public key for fetching this repository from GIT_SERVER:
-export GIT_REPO_PUBKEY="ssh-rsa ... user@machine"
-# The SSH private key for fetching this repository from GIT_SERVER.
-# "\n"s separate lines:
-export GIT_REPO_PRIVKEY="-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----"
-
-############## Optional settings for sending server health emails ##############
-
-# Email address of server administrator:
-export ADMIN_EMAIL=email@example.com
-# Emails to the admin will be sent via this account:
-export SMTP_HOST=email-smtp.eu-central-1.amazonaws.com
-export SMTP_USER=ABC123...
-export SMTP_PASSWORD=aBc1234...
-export SMTP_FROM=server@email.com
-
-################## Optional settings for storing files on S3 ###################
-
-export DEFAULT_FILE_STORAGE=storages.backends.s3boto3.S3Boto3Storage
-export AWS_STORAGE_BUCKET_NAME=mybucket
-export AWS_ACCESS_KEY_ID=ABC....
-export AWS_SECRET_ACCESS_KEY=XYZ...
-# Optionally set the access policy for uploaded files. The default is "private".
-# Even with "private", update clients receive access to the files via presigned
-# S3 URLs. Note however that the associated requests to S3 incur a performance
-# overhead. To avoid it, set AWS_S3_CUSTOM_DOMAIN below.
-export AWS_DEFAULT_ACL=public-read
-# Optionally supply a CDN domain. You can set this to <bucket>.s3.amazonaws.com
-# to avoid the performance overhead of presigned URLs. This requires that the
-# files in the bucket are publicly readable. For example, via
-# AWS_DEFAULT_ACL=public-read.
-export AWS_S3_CUSTOM_DOMAIN=cdn.winget.pro
-# To use a non-AWS S3 endpoint such as Linode, you can optionally set:
-export AWS_S3_HOST=us-east-1.linodeobjects.com
-# Optionally configure the proxy for S3 access:
-export AWS_S3_PROXIES="{'http': 'foo.bar:3128', 'http://hostname': 'foo.bar:4012'}"
-
-######### Optional settings for using a pre-generated SSL certificate ##########
-
-# The full certificate chain with multiple BEGIN / END CERTIFICATE blocks:
-export SSL_CERTIFICATE="-----BEGIN CERTIFICATE-----\n..."
-# The certificate private key.
-export SSL_CERTIFICATE_KEY="-----BEGIN PRIVATE KEY-----\n..."
-```
+Finally, please star this repository if you like it. It motivates us to keep it
+going.
