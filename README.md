@@ -1,4 +1,4 @@
-# api.winget.pro
+# winget.pro
 
 A Python implementation of a private winget repository server (/REST API).
 
@@ -89,7 +89,7 @@ export DJANGO_SECRET_KEY=atLeast50RandomChars
 # The server that hosts this repository:
 export GIT_SERVER=github.com
 # The path on GIT_SERVER where this repository lies:
-export GIT_REPO_NAME=omaha-consulting/api.winget.pro
+export GIT_REPO_NAME=omaha-consulting/winget.pro
 # The branch of this repository that should be checked out:
 export GIT_REPO_BRANCH=main
 # The SSH public key for fetching this repository from GIT_SERVER:
