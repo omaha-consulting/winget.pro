@@ -1,6 +1,6 @@
-# winget.pro
+[![winget.pro logo](https://github.com/omaha-consulting/winget.pro/assets/1076393/03a7a228-da4b-4dce-ac7a-c55e595a327d)](https://winget.pro)
 
-A Python implementation of a private winget repository server (/REST API).
+A private winget repository server written in Python. For an overview of the project and the features of the implementation, please see https://winget.pro.
 
 ## Running locallly
 
