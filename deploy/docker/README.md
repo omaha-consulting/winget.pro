@@ -18,4 +18,4 @@ would attempt to create the initial user again.
 `winget` requires repositories to run under `https://`. For production use, you
 now need to set up a reverse proxy that accepts `https://` requests and forwards
 them to `localhost:8000`. To test things on your local PC, you can use the
-[SSL Proxy](../local/sslproxy) provided in this repository.
+[SSL Proxy](../sslproxy) provided in this repository.
