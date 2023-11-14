@@ -1,4 +1,4 @@
-# Running winget.pro locally
+# Running winget.pro on your own computer
 
 Running winget.pro locally is mostly done during development. For production
 use, consider one of the other deployment options.

@@ -2,18 +2,21 @@ FROM python:3.9
 
 ENV DEBUG=False
 ENV HOST_NAME=*
+# Keep the DB file in a separate directory, which can be shared as a volume.
+ENV SQLITE_DB_FILE=/srv/db/db.sqlite3
 
 WORKDIR /srv
 
 COPY . .
 
-RUN pip install --no-cache-dir -Ur requirements/base-full.txt
+RUN mkdir `dirname $SQLITE_DB_FILE`
 
-RUN python manage.py migrate
+RUN pip install --no-cache-dir -Ur requirements/base-full.txt
 
 RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000", \
-     "--log-level=warning", "--log-file=-"]
+RUN chmod +x /srv/deploy/docker/start.sh
+
+CMD ["/srv/deploy/docker/start.sh"]
