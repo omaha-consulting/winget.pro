@@ -10,5 +10,5 @@ Do you need help or did you encounter an issue? Please
 [file an issue](https://github.com/omaha-consulting/winget.pro/issues). We will
 do our best to help you. Feature and pull requests are also welcome!
 
-Finally, please star this repository if you like it. It motivates us to keep it
-going.
+Finally, please star this repository if you like it! It motivates us to keep it
+going. :-)
