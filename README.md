@@ -9,7 +9,7 @@ instructions in the [`run/`](run) directory to get started. There should be
 something for every environment.
 
 A caveat of this repository is that it receives security fixes with a delay of
-3 months. This gives our enterprise customers time to patch vulnerabilities
+6 months. This gives our enterprise customers time to patch vulnerabilities
 before they become public. You can request immediate access to security fixes by
 getting in touch with us [here](https://winget.pro/start/).
 
