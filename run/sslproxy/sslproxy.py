@@ -52,7 +52,7 @@ def forward(source, destination, prefix=''):
 
 local_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
 local_context.load_cert_chain(
-    certfile="conf/localhost.cert", keyfile="conf/localhost.key"
+    certfile="localhost.cert", keyfile="localhost.key"
 )
 
 if dest_port == 443:
