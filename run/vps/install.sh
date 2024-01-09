@@ -41,25 +41,46 @@ apt-get upgrade -y > /dev/null
 
 if [[ -n "$GIT_SERVER" ]]
 then
-  # Fetch the server source code with git:
+  log 'Fetching the server source code with git.'
+
+  if [[ -z "$GIT_REPO_NAME" ]]
+  then
+    GIT_REPO_NAME=omaha-consulting/winget.pro
+    log "Using default GIT_REPO_NAME $GIT_REPO_NAME."
+  fi
+
+  if [[ -z "$GIT_REPO_BRANCH" ]]
+  then
+    GIT_REPO_BRANCH=main
+    log "Using default GIT_REPO_BRANCH $GIT_REPO_BRANCH."
+  fi
+
   log 'Installing git...'
   apt-get install git-core -y > /dev/null
 
   log 'Configuring git to avoid warnings when pulling...'
   git config --global pull.rebase true
 
-  log 'Setting up SSH keys. This is required so we can clone the Git repository without having to supply a password...'
   mkdir -p .ssh
-  echo "$GIT_REPO_PUBKEY" > .ssh/id_rsa.pub
-  chmod 644 .ssh/id_rsa.pub
-  echo -e "$GIT_REPO_PRIVKEY" > .ssh/id_rsa
-  chmod 600 .ssh/id_rsa
 
   log 'Adding git repository server to known hosts...'
-  ssh-keyscan -H ${GIT_SERVER} >> .ssh/known_hosts 2>/dev/null; chmod 600 .ssh/known_hosts
+  ssh-keyscan -H ${GIT_SERVER} > .ssh/known_hosts 2>/dev/null
+  chmod 600 .ssh/known_hosts
 
-  log 'Cloning the repository...'
-  git clone -q -b ${GIT_REPO_BRANCH} git@${GIT_SERVER}:${GIT_REPO_NAME}.git /srv
+  if [[ -n "$GIT_REPO_PUBKEY" ]]
+  then
+    log 'Setting up SSH keys. This is required so we can clone the Git repository without having to supply a password...'
+    echo "$GIT_REPO_PUBKEY" > .ssh/id_rsa.pub
+    chmod 644 .ssh/id_rsa.pub
+    echo -e "$GIT_REPO_PRIVKEY" > .ssh/id_rsa
+    chmod 600 .ssh/id_rsa
+    GIT_REPO_URL=git@${GIT_SERVER}:${GIT_REPO_NAME}
+  else
+    GIT_REPO_URL=https://${GIT_SERVER}/${GIT_REPO_NAME}
+  fi
+
+  log "Cloning the repository from ${GIT_REPO_URL}..."
+  git clone -q -b ${GIT_REPO_BRANCH} ${GIT_REPO_URL} /srv
 else
   if [ ! -d /srv/run ]
   then
