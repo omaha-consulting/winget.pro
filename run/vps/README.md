@@ -13,7 +13,7 @@ server, then run `install.sh` as root.
 export DEBUG=False
 
 # The domain under which this server runs:
-export HOST_NAME=some.domain.com
+export HOST_NAME=your.domain.com
 
 export DJANGO_SECRET_KEY=atLeast50RandomChars
 
@@ -24,10 +24,19 @@ export GIT_SERVER=github.com
 export ADMIN_EMAIL=email@gmail.com
 ```
 
+After you have run the install script for the first time, you then also need to
+create a superuser for logging in:
+
+```bash
+su -c '/srv/manage.py createsuperuser' - django
+```
+
+Now you can log in at `https://your.domain.com/admin/`.
+
 ## Optional settings
 
 You can add additional lines to `.bashrc` to customize the server setup. This
-needs to be done when you set up the server. (It cannot be done later.)
+needs to be done when you set up the server. It cannot be done later.
 
 ### Multiple domains
 
