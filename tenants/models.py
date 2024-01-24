@@ -1,9 +1,7 @@
-from uuid import uuid4
-
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Model, UUIDField, ManyToManyField
-
+from uuid import uuid4
 
 class Tenant(Model):
 
