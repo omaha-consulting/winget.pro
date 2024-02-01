@@ -8,10 +8,10 @@ If you are here, then you probably want to run winget.pro yourself. Follow the
 instructions in the [`run/`](run) directory to get started. There should be
 something for every environment.
 
-A caveat of this repository is that it receives security fixes with a delay of
-6 months. This gives our enterprise customers time to patch vulnerabilities
-before they become public. You can request immediate access to security fixes by
-getting in touch with us [here](https://winget.pro/start/).
+**This repository receives security fixes with a delay of 6 months.**
+This gives our enterprise customers time to patch vulnerabilities before they
+become public. To get immediate access to security fixes, please click
+[here](https://buy.stripe.com/cN24k9crz91re8U9AO).
 
 If you need help or find a bug, please
 [file an issue](https://github.com/omaha-consulting/winget.pro/issues). We will
