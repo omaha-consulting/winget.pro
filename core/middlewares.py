@@ -10,8 +10,10 @@ _decode = lambda bytes_: b64decode(bytes_).decode('utf-8')
 class RequestMiddleware(MiddlewareMixin):
     _ROUTE_PREFIX = _decode(b'L2FkbWluLw==')
     _MESSAGE = _decode(
-        b'VGhpcyB2ZXJzaW9uIG9mIHdpbmdldC5Qcm8gaXMgaW5zZWN1cmUuIFBsZWFzZSBzdWJzY'
-        b'3JpYmUgdG8gc2VjdXJpdHkgZml4ZXMgdmlhIHRoZSBsaW5rIG9uIEdpdEh1Yi4='
+        b'VGhpcyB2ZXJzaW9uIG9mIHdpbmdldC5Qcm8gaXMgaW5zZWN1cmUuIEFzIG9mIHRoaXMgd'
+        b'3JpdGluZywgdGhlcmUgYXJlIDMgdW5wYXRjaGVkIHZ1bG5lcmFiaWxpdGllcy4gUGxlYX'
+        b'NlIHN1YnNjcmliZSB0byBzZWN1cml0eSBmaXhlcyB2aWEgdGhlIGxpbmsgb24gR2l0SHV'
+        b'iLg=='
     )
     def process_request(self, request):
         if request.path.startswith(self._ROUTE_PREFIX):
