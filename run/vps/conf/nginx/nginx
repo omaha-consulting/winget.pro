@@ -32,6 +32,7 @@ server {
     include includes/ssl;
     include includes/server-name;
 
+    # Allow file uploads up to 4 GB:
     client_max_body_size 4096m;
 
     access_log /var/log/nginx-access.log combined_timed;
