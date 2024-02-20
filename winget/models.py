@@ -2,12 +2,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinLengthValidator, RegexValidator
 from django.db.models import Model, CharField, DateTimeField, ForeignKey, \
     CASCADE, TextField, FileField, CheckConstraint, Q
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
 from hashlib import sha256
 from tenants.models import Tenant
 from winget.util import CharFieldFromChoices, randomize_filename
-
 
 class Package(Model):
     tenant = ForeignKey(Tenant, on_delete=CASCADE)
@@ -37,7 +36,6 @@ class Package(Model):
     def __str__(self):
         return self.name
 
-
 class Version(Model):
     package = ForeignKey(Package, on_delete=CASCADE)
     version = CharField(
@@ -56,13 +54,11 @@ class Version(Model):
             result += ' ' + self.version
         return result
 
-
 def installer_upload_to(instance, filename):
     # Randomize the upload path. This prevents users from guessing it and
     # prevents clashes.
     randomized_filename = randomize_filename(filename)
     return f'{instance.version.package.tenant.uuid}/{randomized_filename}'
-
 
 class Installer(Model):
     version = ForeignKey(Version, on_delete=CASCADE)
@@ -183,7 +179,6 @@ class Installer(Model):
             result_parts.append(self.scope)
         return ' '.join(result_parts)
 
-
 @receiver(pre_save, sender=Installer)
 def pre_installer_save(sender, instance, **kwargs):
     m = sha256()
@@ -191,3 +186,7 @@ def pre_installer_save(sender, instance, **kwargs):
     for chunk in instance.file.chunks():
         m.update(chunk)
     instance.sha256 = m.digest().hex()
+
+@receiver(post_delete, sender=Installer)
+def post_installer_delete(sender, instance, using, **kwargs):
+    instance.file.delete(False)
