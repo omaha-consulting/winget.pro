@@ -88,32 +88,36 @@ class Installer(Model):
     )
     silent_switch = CharField(
         blank=True, max_length=512, help_text=
-        "The installer's command-line argument for silent installation."
+        "Setting this to abc makes `winget install --silent` run "
+        "`installer.exe abc`."
     )
     silent_progress_switch = CharField(
         blank=True, max_length=512, help_text=
-        "The installer's command-line argument for non-interactive installation."
+        "Setting this to abc makes `winget install` (without modifiers) run "
+        "`installer.exe abc`."
     )
     interactive_switch = CharField(
         blank=True, max_length=512, help_text=
-        "The installer's command-line argument for interactive installation."
+        "Setting this to abc makes `winget install --interactive` run "
+        "`installer.exe abc`."
     )
     install_location_switch = CharField(
         blank=True, max_length=512, help_text=
-        "The installer's command-line argument for a custom installation "
-        "location. Use &lt;INSTALLPATH&gt; as placeholder."
+        'Setting this to "abc &lt;INSTALLPATH&gt;" makes `winget install '
+        '--location C:\Dir` run `installer.exe abc C:\Dir`.'
     )
     log_switch = CharField(blank=True, max_length=512, help_text=
-        "The installer's command-line argument for a custom log file path. Use "
-        "&lt;LOGPATH&gt; as placeholder."
+        'Setting this to "abc &lt;LOGPATH&gt;" runs `installer.exe abc '
+        '&lt;some file path&gt;`. Set the path with `winget install --log`.'
     )
     upgrade_switch = CharField(
         blank=True, max_length=512, help_text=
         "The installer's command-line argument when the user chooses an upgrade."
     )
     custom_switch = CharField(
-        blank=True, max_length=512,
-        help_text="Custom command-line arguments to pass to the installer."
+        blank=True, max_length=512, help_text=
+        "Setting this to abc always appends `abc` to the installer's "
+        "command-line. Eg. `installer.exe abc`."
     )
     sha256 = CharField(
         max_length=64, validators=[RegexValidator('^[a-fA-F0-9]{64}$')]
