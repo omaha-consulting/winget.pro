@@ -4,7 +4,9 @@ To run winget.pro with Docker, first uncomment the `DJANGO_SUPERUSER_...` lines
 in [`docker-compose.yml`](docker-compose.yml) and edit them to set the
 credentials of the user you want to log in with.
 
-Then execute the following command:
+Then execute the command below. If you are on an older version of Docker, then
+really make sure to write `docker-compose` and not `docker compose`. Otherwise,
+you will get many path-related errors.
 
     docker-compose up
 
