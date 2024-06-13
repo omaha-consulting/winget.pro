@@ -4,14 +4,26 @@ An enterprise-grade, private winget repository server written in Python. For an
 overview of the project and its features, please see
 [our homepage](https://winget.pro).
 
+## Getting started
+
 If you are here, then you probably want to run winget.pro yourself. Follow the
 instructions in the [`run/`](run) directory to get started. There should be
 something for every environment.
 
-**This repository receives security fixes with a delay of 6 months.**
-This gives our enterprise customers time to patch vulnerabilities before they
-become public. To get immediate access to security fixes, please click
-[here](https://buy.stripe.com/cN24k9crz91re8U9AO).
+## Comparison to the hosted and enterprise versions
+
+The code in this repository gives you a functional private repository. However,
+it lacks certain benefits that are part of winget.pro's paid editions:
+
+ * This repository receives security fixes with a delay of 6 months.
+ * [Entra ID authentication](https://winget.pro/winget-entra-id-authentication/)
+ * Automatic backups
+
+If you would like any of these benefits, either in an on-premise deployment or
+hosted by us, please sign up or enquire about a paid plan at
+https://winget.pro/start/. We would love to have you as a customer.
+
+## Getting help
 
 If you need help or find a bug, please
 [file an issue](https://github.com/omaha-consulting/winget.pro/issues). We will
