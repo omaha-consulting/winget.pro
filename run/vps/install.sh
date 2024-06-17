@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# Installs winget.pro and all dependencies on a fresh Debian 11.
-# To use, upload this file and .bashrc to /root, then execute this script as
-# root.
+# Installs winget.pro and all dependencies on a fresh Debian 12. To use, upload
+# this file and .bashrc to /root, then execute this script as root.
 
 # Error handling:
 set -e
