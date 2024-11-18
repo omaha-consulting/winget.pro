@@ -1,10 +1,10 @@
 # VPS deployment
 
 The files in this directory let you deploy winget.pro to a Linux VPS. They are
-tested on stock Debian 11 but should also run on other Linux distributions such
+tested on stock Debian 12 but should also run on other Linux distributions such
 as Ubuntu with modifications.
 
-To deploy winget.pro to a Debian 11 server, upload
+To deploy winget.pro to a Debian 12 server, upload
 [`install.sh`](install.sh) and a `.bashrc` file with the settings below to the
 server, then run `install.sh` as root.
 
