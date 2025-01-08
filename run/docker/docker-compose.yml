@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   django:
@@ -9,11 +9,11 @@ services:
       - static:/srv/static
       - media:/srv/media
       - db_files:/srv/db
-# Uncomment these lines the first time you run `docker-compose up`:
-#    environment:
-#      - DJANGO_SUPERUSER_USERNAME=admin
-#      - DJANGO_SUPERUSER_EMAIL=some@email.com
-#      - DJANGO_SUPERUSER_PASSWORD=<a strong password>
+  # Uncomment these lines the first time you run `docker-compose up`:
+  #    environment:
+  #      - DJANGO_SUPERUSER_USERNAME=admin
+  #      - DJANGO_SUPERUSER_EMAIL=some@email.com
+  #      - DJANGO_SUPERUSER_PASSWORD=<a strong password>
   nginx:
     image: nginx:1.25.3
     volumes:
