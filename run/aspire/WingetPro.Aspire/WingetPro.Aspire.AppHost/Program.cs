@@ -17,7 +17,12 @@ var nginx = builder.AddDockerfile("nginx", "../../../..", "run/aspire/nginx.Dock
     .WithVolume("static", "/srv/static")
     .WithVolume("winget.pro_uploaded_files", "/srv/media")
     .WithVolume("nginx.conf", "/etc/nginx/nginx.conf:ro")
-    .WithHttpsEndpoint(targetPort:80)
+    .WithHttpEndpoint(targetPort:80)
+    .WithHttpsEndpoint(targetPort:443)
+    .WithBuildArg("CERTIFICATE_NAME", "localhost")
+    .WithBuildArg("CERTIFICATE_PASSWORD", "test")
+    .WithBuildArg("CERTIFICATE_SUBJECT", "localhost")
+    .WithBuildArg("CERTIFICATE_DNS_NAME", "localhost")
     .WaitFor(django);
 
 builder.Build().Run();
