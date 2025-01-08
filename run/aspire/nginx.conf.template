@@ -9,6 +9,7 @@ http {
 
     server {
         listen 80;
+        client_max_body_size 24000M;
 
         location /static/ {
             alias /srv/static/;
@@ -32,12 +33,14 @@ http {
 
     server {
         listen 443 ssl;
+        client_max_body_size 24000M;
 
         ssl_certificate /etc/nginx/certs/${CERTIFICATE_NAME}.pem;
         ssl_certificate_key /etc/nginx/certs/${CERTIFICATE_NAME}.key;
 
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_prefer_server_ciphers on;
+
 
         location /static/ {
             alias /srv/static/;
