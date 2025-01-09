@@ -34,8 +34,6 @@ COPY run/aspire/nginx.conf.template /etc/nginx/nginx.conf.template
 
 # Copy the generated SSL certificate and key from the previous stage
 COPY --from=cert-generator /srv/nginx/certs /etc/nginx/certs
-RUN ls /etc/nginx/certs
-
 
 # Use envsubst to substitute environment variables in the Nginx configuration
 RUN apt-get update && apt-get install -y gettext-base
