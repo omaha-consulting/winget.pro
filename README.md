@@ -12,16 +12,10 @@ something for every environment.
 
 ## Comparison to the hosted and enterprise versions
 
-The code in this repository gives you a functional private repository. However,
-it lacks certain benefits that are part of winget.pro's paid editions:
-
- * This repository receives security fixes with a delay of 6 months.
- * [Entra ID authentication](https://winget.pro/winget-entra-id-authentication/)
- * Automatic backups
-
-If you would like any of these benefits, either in an on-premise deployment or
-hosted by us, please sign up or enquire about a paid plan at
-https://winget.pro/start/. We would love to have you as a customer.
+The open source version of winget.pro has several limitations in comparison to
+the paid versions. Please see
+[this page](https://winget.pro/open-source-limitations/) for an overview of the
+differences.
 
 ## Getting help
 
